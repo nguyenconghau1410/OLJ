@@ -1,0 +1,83 @@
+<div class="main-problems pt-20 h-64">
+    <h2>Thông tin cá nhân</h2>
+    <hr class="custom-divider">
+    <div class="flex mt-2">
+        <div class="w-1/6">
+            <img class="rounded-xl w-44 h-44" src="{{user!.avatar}}" alt="Hình ảnh">
+            <br>
+            <p>
+                <span class="font-bold text-base">Số bài đã giải: 120</span> <br>
+                Hạng điểm: #200 <br>
+                Tổng điểm: 1000
+            </p>
+        </div>
+        <div class="w-5/6 h-full ml-4 overflow-auto">
+            <h3 class="text-2xl font-thin">{{user!.name}}
+                <button (click)="openForm()"><span class="text-2xl ml-24" nz-icon nzType="edit"
+                        nzTheme="outline"></span></button>
+            </h3>
+            <p>ID: {{user!.id}}</p>
+            <p>Email: {{user!.email}} </p>
+            <p>Lớp: {{user!.classname}}</p>
+            <p>Khoa: {{user!.faculty}}</p>
+            <hr class="custom-divider w-1/2">
+            <div class="mt-4 flex space-x-16">
+                <a href="/profile/my-submission?result=AC">
+                    <div
+                        class="text-white bg-green-400 w-48 h-48 rounded-full flex flex-col justify-center items-center">
+                        <p>Số bài AC</p>
+                        <p>100</p>
+                    </div>
+                </a>
+                <a>
+                    <div class="text-white bg-red-500 w-48 h-48 rounded-full flex flex-col justify-center items-center">
+                        <p>Số bài chưa AC</p>
+                        <p>20</p>
+                    </div>
+                </a>
+                <a>
+                    <div
+                        class="text-white bg-gray-400 w-48 h-48 rounded-full flex flex-col justify-center items-center">
+                        <p>Tổng số lần nộp bài</p>
+                        <p>500</p>
+                    </div>
+                </a>
+            </div>
+            <div class="mt-4" *ngIf="result !== null && result !== undefined">
+                <hr class="custom-divider" class="mb-4">
+                <app-my-submission></app-my-submission>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="flex items-center justify-center">
+    <div *ngIf="showEditForm"
+        class="absolute top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center">
+        <div class="bg-white p-6 rounded shadow-lg">
+            <h3 class="text-lg font-semibold mb-2">Chỉnh sửa thông tin</h3>
+            <form (ngSubmit)="onSubmit(form)" #form="ngForm" class="space-y-4">
+                <div>
+                    <label for="email" class="block">Tên người dùng:</label>
+                    <input type="text" [(ngModel)]="user!.name" value="#" id="tag" name="name"
+                        class="w-full border rounded p-2" style="width: 300px;">
+                </div>
+                <div>
+                    <label for="class" class="block">Lớp:</label>
+                    <input type="text" [(ngModel)]="user!.classname" id="class" name="classname"
+                        class="w-full border rounded p-2" style="width: 300px;">
+                </div>
+                <div>
+                    <label for="email" class="block">Khoa:</label>
+                    <input type="text" [(ngModel)]="user!.faculty" id="faculty" name="faculty"
+                        class="w-full border rounded p-2" style="width: 300px;">
+                </div>
+
+                <div class="flex justify-end">
+                    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Save</button>
+                    <button type="button" (click)="closeForm()"
+                        class="bg-gray-300 text-gray-700 px-4 py-2 rounded ml-2">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
