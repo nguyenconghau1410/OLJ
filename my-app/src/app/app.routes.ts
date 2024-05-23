@@ -1,0 +1,48 @@
+import { Routes } from '@angular/router';
+import { LoginComponent } from './login/login.component';
+import { ProblemsComponent } from './problems/problems.component';
+import { SubmissionsComponent } from './submissions/submissions.component';
+import { UsersComponent } from './users/users.component';
+import { ProfileComponent } from './profile/profile.component';
+import { DetailProblemComponent } from './detail-problem/detail-problem.component';
+import { CreateProblemComponent } from './profile/create-problem/create-problem.component';
+import { SubmitComponent } from './submit/submit.component';
+import { ResultComponent } from './result/result.component';
+import { AdministrationComponent } from './administration/administration.component';
+import { EditProblemComponent } from './profile/edit-problem/edit-problem.component';
+import { MyContestComponent } from './my-contest/my-contest.component';
+import { CreateContestComponent } from './my-contest/create-contest/create-contest.component';
+import { DetailContestComponent } from './my-contest/detail-contest/detail-contest.component';
+import { LandingPageComponent } from './my-contest/landing-page/landing-page.component';
+import { ChallengesComponent } from './my-contest/challenges/challenges.component';
+import { ResultContestComponent } from './my-contest/result-contest/result-contest.component';
+import { SubmissionContestComponent } from './my-contest/submission-contest/submission-contest.component';
+import { MySubmissionProblemComponent } from './submissions/my-submission-problem/my-submission-problem.component';
+
+export const routes: Routes = [
+    { path: 'login', component: LoginComponent },
+    { path: 'administration', component: AdministrationComponent },
+    { path: 'problems', component: ProblemsComponent },
+    { path: 'problems/:problemId', component: DetailProblemComponent },
+    { path: 'problems/:problemId/submit', component: SubmitComponent },
+    { path: 'submissions', component: SubmissionsComponent },
+    { path: 'submissions/:id', component: ResultComponent },
+    { path: 'problems/:problemId/my-submissions', component: MySubmissionProblemComponent },
+    { path: 'problems/:problemId/all-submissions', component: MySubmissionProblemComponent },
+    { path: 'users', component: UsersComponent },
+    { path: 'profile', component: ProfileComponent },
+    { path: 'profile/my-submission', component: ProfileComponent },
+    { path: 'administration/create-problem', component: CreateProblemComponent },
+    { path: 'administration/edit-problem/:id', component: EditProblemComponent },
+    { path: 'my-contest', component: MyContestComponent },
+    { path: 'my-contest/create-contest', component: CreateContestComponent },
+    { path: 'my-contest/edit-contest/:id', component: DetailContestComponent },
+    { path: 'landing/:id', component: LandingPageComponent },
+    { path: 'contests/:id/challenges', component: ChallengesComponent },
+    { path: 'contests/:id/challenges/:problemId', component: ChallengesComponent },
+    { path: 'contests/:id/challenges/:problemId/submit', component: SubmitComponent },
+    { path: 'contests/:submissionId', component: ResultContestComponent },
+    { path: 'contests/:id/all-submission', component: SubmissionContestComponent },
+    { path: 'contests/:id/my-submission', component: SubmissionContestComponent },
+    { path: 'contests/:id/:problemId', component: SubmissionContestComponent },
+];

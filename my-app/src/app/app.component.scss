@@ -1,0 +1,14 @@
+.divider {
+    height: 1.5rem;
+    width: 1px;
+    background-color: #ffffff;
+    margin: 0 0.5rem;
+}
+
+.options {
+    display: none;
+}
+
+li:hover .options {
+    display: block;
+}

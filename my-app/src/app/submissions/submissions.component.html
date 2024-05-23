@@ -1,0 +1,112 @@
+<div class="main-problems pt-20 pb-20">
+    <h2>Danh sách bài nộp</h2>
+    <hr class="custom-divider">
+    <div class="main-content">
+        <div class="flex flex-wrap">
+            <div class="table-content ml-0 mx-auto overflow-hidden rounded-lg">
+                <table class="w-full border-collapse border border-gray-300">
+                    <thead class="bg-gray-800 text-white">
+                        <tr>
+                            <th class="border border-gray-300 px-4 py-2" style="width: 11%;">Kết quả</th>
+                            <th class="border border-gray-300 px-4 py-2">Thông tin nộp bài</th>
+                            <th class="border border-gray-300 px-4 py-2" style="width: 10%;">Thời gian</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let submission of submissionList">
+                            <td [ngClass]="{'bg-green-400': submission!.result === 'ACCEPTED',
+                            'bg-red-400' : submission!.result !== 'ACCEPTED'}"
+                                class="border border-gray-300 px-4 py-2 text-center text-base bold">
+                                <span
+                                    *ngIf="check(submission.result)">{{submission.rightTest}}/{{submission.totalTest}}</span>
+                                <span *ngIf="!check(submission.result)">--/--</span>
+                                <p class="text-sm">{{adjustingString(submission.result)}} |
+                                    {{normalizeString(submission.language)}}</p>
+                            </td>
+                            <td class="border border-gray-300 px-4 py-2">
+                                <div class="flex items-center justify-between">
+                                    <a (click)="redirect(submission.problemId)" class="text-xl">{{submission.title}}</a>
+                                    <a *ngIf="user!.role!.code !== 'STUDENT'" (click)="click(submission.id)"><mat-icon
+                                            class="text-black">visibility</mat-icon></a>
+                                </div>
+                                <span class="text-base">{{submission.name}}, </span>
+                                <span class="text-base">{{submission.createdAt}}</span>
+                            </td>
+                            <td *ngIf="check(submission.result)"
+                                class="border border-gray-300 px-4 py-2 text-center text-base bold">
+                                {{formatNumber(submission.time)}}s
+                                <p class="text-sm">{{formatNumber(submission.memory)}} MB</p>
+                            </td>
+                            <td *ngIf="!check(submission.result)"
+                                class="border border-gray-300 px-4 py-2 text-center text-base bold">
+                                ---
+                                <p class="text-sm">---</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="search-result-content w-full md:w-1/2">
+                <div class="search-content mb-4 overflow-hidden rounded-lg">
+                    <div class="border border-gray-300">
+                        <div class="bg-gray-800 text-white">
+                            <p class="px-4 py-2 text-base">Tìm kiếm bài tập</p>
+                        </div>
+                        <div>
+                            <form id="filter-form" class="ml-4 mr-4 mb-4 italic" name="form" action="" method="get">
+                                Trạng thái
+                                <select id="mySelect" class="border border-gray-300 rounded-md px-3 py-1 w-full mb-4">
+                                    <option value="" disabled selected hidden>Chọn một tùy chọn</option>
+                                    <option value="option1">Tùy chọn 1</option>
+                                    <option value="option2">Tùy chọn 2</option>
+                                    <option value="option3">Tùy chọn 3</option>
+                                </select>
+                                Ngôn ngữ
+                                <select id="mySelect" class="border border-gray-300 rounded-md px-3 py-1 w-full">
+                                    <option value="" disabled selected hidden>Chọn một tùy chọn</option>
+                                    <option value="option1">Tùy chọn 1</option>
+                                    <option value="option2">Tùy chọn 2</option>
+                                    <option value="option3">Tùy chọn 3</option>
+                                </select>
+                                <div class="flex items-center">
+                                    <button type="button"
+                                        class="bg-blue-500 text-white px-2 py-1 mt-2 rounded-md ml-auto mt-4">Tìm</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="result-content overflow-hidden rounded-lg">
+                    <div class="border border-gray-300">
+                        <div class="bg-gray-800 text-white">
+                            <p class="px-4 py-2 text-base">Tìm kiếm bài tập</p>
+                        </div>
+                        <div>
+                            <form id="filter-form" class="ml-4 mr-4 mb-4 italic" name="form" action="" method="get">
+                                Trạng thái
+                                <select id="mySelect" class="border border-gray-300 rounded-md px-3 py-1 w-full mb-4">
+                                    <option value="" disabled selected hidden>Chọn một tùy chọn</option>
+                                    <option value="option1">Tùy chọn 1</option>
+                                    <option value="option2">Tùy chọn 2</option>
+                                    <option value="option3">Tùy chọn 3</option>
+                                </select>
+                                Ngôn ngữ
+                                <select id="mySelect" class="border border-gray-300 rounded-md px-3 py-1 w-full">
+                                    <option value="" disabled selected hidden>Chọn một tùy chọn</option>
+                                    <option value="option1">Tùy chọn 1</option>
+                                    <option value="option2">Tùy chọn 2</option>
+                                    <option value="option3">Tùy chọn 3</option>
+                                </select>
+                                <div class="flex items-center">
+                                    <button type="button"
+                                        class="bg-blue-500 text-white px-2 py-1 mt-2 rounded-md ml-auto mt-4">Tìm</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
