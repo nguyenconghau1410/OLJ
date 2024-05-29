@@ -8,4 +8,5 @@ import java.util.List;
 public interface ContestRepository extends MongoRepository<ContestDocument, String> {
     ContestDocument insert(ContestDocument contestDocument);
     List<ContestDocument> findByCreatedBy(String email);
+    List<ContestDocument> findByState(String state);
 }

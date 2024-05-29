@@ -26,6 +26,10 @@ public class UserService {
     public Optional<UserDocument> findUser(String email) {
         return userRepository.findByEmail(email);
     }
+
+    public Optional<UserDocument> findUserById(String id) {
+        return userRepository.findById(id);
+    }
     public void updateUser(String email, Map<String, String> data) {
         UserDocument userDocument = userRepository.findOneByEmail(email);
         userDocument.setName(data.get("name"));

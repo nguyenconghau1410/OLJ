@@ -19,6 +19,12 @@ export class AppComponent {
   isLoggedIn = false
   name!: String | null
   user!: User
+  message: { title: string, content: string } = {
+    title: '',
+    content: ''
+  }
+
+  openForm: boolean = false
   constructor(
     private tokenService: TokenService,
     private userService: UserService,
@@ -38,12 +44,29 @@ export class AppComponent {
                 this.name! = data.name
                 this.user = data
                 this.dataService.setUserSubject(data)
+
+
+                let destination = `/user/${this.user.email}/queue/notifications`
+                this.websocketService.subscribe(destination, (frame: any) => {
+                  const decoder = new TextDecoder('utf-8');
+                  const messageText = decoder.decode(frame.binaryBody);
+                  const message = JSON.parse(messageText);
+
+                  if (message) {
+                    this.openForm = true
+                    this.message = message
+                  }
+                })
               }
             }
           )
         }
       }
     )
+  }
+
+  closeForm() {
+    this.openForm = false
   }
 
   signOut(): void {

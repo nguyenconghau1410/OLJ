@@ -27,6 +27,7 @@ export class ResultContestComponent {
   options = {}
   completed = false
   resultList: ResultTest[] = []
+  error = false
 
   constructor(
     private contestService: ContestService,
@@ -73,7 +74,7 @@ export class ResultContestComponent {
               }
 
               if (this.user.role!.code === 'STUDENT' && this.user.id !== this.detailContest.userId) {
-                this.router.navigate(['problems', this.detailContest.problemId])
+                this.error = true
                 return
               }
 
@@ -103,11 +104,7 @@ export class ResultContestComponent {
                   }
                   else {
                     this.detailContest.result = message['result']
-                    this.detailContest.point = message['scored']
-                    this.completed = true
-                  }
-                  if (this.completed) {
-                    this.websocketService.sendMessage('/app/submission', id)
+                    this.detailContest.point = parseFloat(message['scored'])
                   }
                 })
 
@@ -130,6 +127,7 @@ export class ResultContestComponent {
   formatNumber(num: number) {
     return parseFloat(num.toFixed(2))
   }
+
 
   check(result: string): boolean {
     if (result === 'TIME LIMIT EXCEEDED') {

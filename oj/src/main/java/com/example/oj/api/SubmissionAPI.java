@@ -2,11 +2,13 @@ package com.example.oj.api;
 
 import com.example.oj.constant.Utils;
 import com.example.oj.document.SubmissionDocument;
+import com.example.oj.dto.Statistic;
 import com.example.oj.dto.Submission;
 import com.example.oj.service.SubmissionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -35,23 +37,41 @@ public class SubmissionAPI {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
-    @GetMapping("/get-submission-of-problem/{problemId}")
-    public ResponseEntity<List<SubmissionDocument>> getSubmissionOfProblem(@RequestHeader("Authorization") String authorizationHeader, @PathVariable String problemId) {
+    @GetMapping("/get-submission-of-problem/{problemId}/{pageNumber}")
+    public ResponseEntity<List<SubmissionDocument>> getSubmissionOfProblem(@RequestHeader("Authorization") String authorizationHeader, @PathVariable String problemId, @PathVariable Integer pageNumber) {
         String email = utils.getEmailFromToken(authorizationHeader);
-        List<SubmissionDocument> submissionDocumentList =submissionService.getSubmissionOfProblem(problemId, email);
-        Collections.reverse(submissionDocumentList);
+        List<SubmissionDocument> submissionDocumentList =submissionService.getSubmissionOfProblem(problemId, email, pageNumber);
         return ResponseEntity.ok(submissionDocumentList);
     }
 
-    @GetMapping("/get-by-problemId/{problemId}")
-    public ResponseEntity<List<SubmissionDocument>> getSubmissionOfProblem(@PathVariable String problemId) {
-        List<SubmissionDocument> submissionDocumentList = submissionService.getSubmissionByProblem(problemId);
-        Collections.reverse(submissionDocumentList);
+    @GetMapping("/count-submissions-problem/{problemId}/{type}")
+    public ResponseEntity<Map<String, Integer>> countSubmissionProblem(@RequestHeader("Authorization") String authorizationHeader, @PathVariable String problemId, @PathVariable String type) {
+        Map<String, Integer> mp = new HashMap<>();
+        String email = utils.getEmailFromToken(authorizationHeader);
+        mp.put("total", submissionService.countSubmissionProblem(problemId, email, type));
+        return ResponseEntity.ok(mp);
+    }
+
+    @GetMapping("/get-by-problemId/{problemId}/{pageNumber}")
+    public ResponseEntity<List<SubmissionDocument>> getSubmissionOfProblem(@PathVariable String problemId, @PathVariable Integer pageNumber) {
+        List<SubmissionDocument> submissionDocumentList = submissionService.getSubmissionByProblem(problemId, pageNumber);
         return ResponseEntity.ok(submissionDocumentList);
     }
 
-    @GetMapping("/get-all")
-    public ResponseEntity<List<SubmissionDocument>> getAll() {
-        return ResponseEntity.ok(submissionService.getAll());
+    @GetMapping("/get-all/{pageNumber}")
+    public ResponseEntity<List<SubmissionDocument>> getAll(@PathVariable Integer pageNumber) {
+        return ResponseEntity.ok(submissionService.getAll(pageNumber));
+    }
+
+    @GetMapping("/count-total-submissions")
+    public ResponseEntity<Map<String, Integer>> count() {
+        Map<String, Integer> mp = new HashMap<>();
+        mp.put("total", submissionService.count());
+        return ResponseEntity.ok(mp);
+    }
+
+    @GetMapping("/get-statistic")
+    public ResponseEntity<List<Statistic>> getStatistic() {
+        return ResponseEntity.ok(submissionService.getStatistic());
     }
 }

@@ -4,23 +4,16 @@ import com.example.oj.constant.Utils;
 import com.example.oj.document.ProblemDocument;
 import com.example.oj.document.TopicDocument;
 import com.example.oj.document.TopicProblemDocument;
-import com.example.oj.document.UserDocument;
 import com.example.oj.dto.ProblemSmall;
-import com.example.oj.dto.TaskContest;
 import com.example.oj.dto.TopicProblem;
 import com.example.oj.service.ProblemService;
 import com.example.oj.service.TopicService;
-import com.example.oj.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/v1/problem")
@@ -50,10 +43,18 @@ public class ProblemAPI {
         }
     }
 
-    @GetMapping("/get-all")
-    public ResponseEntity<List<ProblemDocument>> getAllProblem() {
-        return ResponseEntity.ok(problemService.findAll());
+    @GetMapping("/get-all/{pageNumber}")
+    public ResponseEntity<List<ProblemDocument>> getAllProblem(@PathVariable Integer pageNumber) {
+        return ResponseEntity.ok(problemService.findAll(pageNumber));
     }
+
+    @GetMapping("/get-total-document")
+    public ResponseEntity<Map<String, Integer>> count() {
+        Map<String, Integer> mp = new HashMap<>();
+        mp.put("total", problemService.count());
+        return ResponseEntity.ok(mp);
+    }
+
     @GetMapping("/get/{id}")
     public ResponseEntity<ProblemDocument> getOne(@PathVariable String id) {
         Optional<ProblemDocument> problemDocument = problemService.findOne(id);
@@ -84,4 +85,8 @@ public class ProblemAPI {
         return ResponseEntity.ok(problemService.findByKeyword(keyword));
     }
 
+    @PostMapping("/search")
+    public ResponseEntity<Map<String, Object>> search(@RequestBody Map<String, Object> data) {
+        return ResponseEntity.ok(problemService.search(data));
+    }
 }

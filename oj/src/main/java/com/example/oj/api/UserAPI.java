@@ -46,4 +46,13 @@ public class UserAPI {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
+
+    @GetMapping("/get-by-id/{id}")
+    public ResponseEntity<UserDocument> getUserById(@PathVariable String id) {
+        Optional<UserDocument> userDocumentOptional = userService.findUserById(id);
+        if(userDocumentOptional.isPresent()) {
+            return ResponseEntity.ok(userDocumentOptional.get());
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    }
 }

@@ -10,24 +10,35 @@ import com.example.oj.repository.ProblemRepository;
 import com.example.oj.repository.TopicProblemRepository;
 import com.example.oj.repository.TopicRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.parsing.Problem;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
 public class ProblemService {
     private final ProblemRepository problemRepository;
     private final TopicProblemRepository topicProblemRepository;
-    private final TopicRepository topicRepository;
+    private final TopicService topicService;
     public ProblemDocument insert(ProblemDocument problemDocument) {
         return problemRepository.insert(problemDocument);
     }
 
-    public List<ProblemDocument> findAll() {
-        return problemRepository.findAllByState("PUBLIC");
+    public Integer count() {
+        return problemRepository.countByState("PUBLIC");
+    }
+
+    public List<ProblemDocument> findAll(int pageNumber) {
+        Pageable pageable = PageRequest.of(pageNumber, 12);
+        Page<ProblemDocument> pages = problemRepository.findAllByState("PUBLIC", pageable);
+        List<ProblemDocument> list = new ArrayList<>();
+        list.addAll(pages.getContent());
+        return list;
     }
 
     public Optional<ProblemDocument> findOne(String id) {
@@ -69,5 +80,24 @@ public class ProblemService {
             problems.add(new ProblemSmall().convert(li));
         }
         return problems;
+    }
+
+    public Map<String, Object> search(Map<String, Object> data) {
+        if(!data.get("id").equals("")) {
+            return topicService.findByTopicId((String) data.get("id"), (Integer) data.get("pageNumber"));
+        }
+        else {
+            Integer total = problemRepository.countByTitleContaining((String) data.get("search"));
+            Pageable pageable = PageRequest.of((Integer) data.get("pageNumber"), 12);
+            Page<ProblemDocument> problemDocuments = problemRepository.findByTitleContaining((String) data.get("search"), pageable);
+            List<ProblemSmall> problems = new ArrayList<>();
+            for (ProblemDocument problemDocument: problemDocuments.getContent()) {
+                problems.add(new ProblemSmall().convert(problemDocument));
+            }
+            Map<String, Object> mp = new HashMap<>();
+            mp.put("list", problems);
+            mp.put("total", total);
+            return mp;
+        }
     }
 }

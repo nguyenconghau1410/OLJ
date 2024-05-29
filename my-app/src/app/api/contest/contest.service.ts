@@ -58,6 +58,13 @@ export class ContestService {
     )
   }
 
+  getSignups(id: string): Observable<any> {
+    return this.http.get(
+      `${API_URL.getSignups}/${id}`,
+      { headers: headers }
+    )
+  }
+
   addSubmission(submit: Submit): Observable<any> {
     return this.http.post(
       API_URL.addSubmissionContest,
@@ -91,6 +98,26 @@ export class ContestService {
     return this.http.get(
       `${API_URL.getSubmissionOfProblemInContest}/${id}/${problemId}`,
       { headers: headers }
+    )
+  }
+
+  getLeaderBoardList(id: string): Observable<any> {
+    return this.http.get(
+      `${API_URL.getLeaderBoardList}/${id}`,
+      { headers: headers }
+    )
+  }
+
+  getDetailLeaderboard(contestId: string, userId: string): Observable<any> {
+    return this.http.get(
+      `${API_URL.getDetailLeaderboard}/${contestId}/${userId}`,
+      { headers: headers }
+    )
+  }
+
+  getContestList(): Observable<any> {
+    return this.http.get(
+      API_URL.getContestList
     )
   }
 }

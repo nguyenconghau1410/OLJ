@@ -116,7 +116,7 @@ public class Utils {
     }
 
     public Float calculateScore(int rightTest, int totalTest, float maxScored) {
-        float scored = ((float) (rightTest / totalTest)) * maxScored;
+        float scored = ((float)rightTest / totalTest) * maxScored;
         return scored;
     }
 

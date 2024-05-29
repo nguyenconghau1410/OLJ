@@ -137,12 +137,17 @@ export class LandingPageComponent {
       }
     }
     else {
-      this.contest.participants.push({ email: this.user.email, joined: false })
-      this.contestService.update(this.contest).subscribe(
-        () => {
-          this.router.navigate(['contests', this.id, 'challenges'])
+      for (let i = 0; i < this.contest.participants.length; i++) {
+        if (this.contest.participants[i].email === this.user.email) {
+          this.contestService.update(this.contest).subscribe(
+            () => {
+              this.router.navigate(['contests', this.id, 'challenges'])
+            }
+          )
+          return
         }
-      )
+      }
+      this.contest.participants.push({ email: this.user.email, joined: true })
     }
     if (!ok) {
       this.toastrService.info(

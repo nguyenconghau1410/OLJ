@@ -26,6 +26,10 @@ export class SubmissionContestComponent {
   ) { }
 
   ngOnInit() {
+    if (!sessionStorage.getItem('access_token')) {
+      this.router.navigate(['login'])
+      return
+    }
     this.checkForMySubmission()
     this.dataService.user?.subscribe(
       user => {
@@ -121,7 +125,6 @@ export class SubmissionContestComponent {
     if (this.user.id !== userId) {
       ok = false
     }
-
     return ok
   }
 }

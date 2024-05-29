@@ -23,8 +23,8 @@
                                     class="text-xl text-green-400">{{problem.title}}</span></a>
                         </div>
                         <div class="w-1/6 flex justify-end">
-                            <a class="mr-2"><mat-icon class="text-gray-400" style="vertical-align: middle;"
-                                    title="Bảng xếp hạng">leaderboard</mat-icon></a>
+                            <!-- <a class="mr-2"><mat-icon class="text-gray-400" style="vertical-align: middle;"
+                                    title="Bảng xếp hạng">leaderboard</mat-icon></a> -->
                             <a (click)="redirectSubmission(contest.id, '', problem.id)"><mat-icon class="text-gray-400"
                                     style="vertical-align: middle;" title="Các bài nộp">list</mat-icon></a>
                         </div>
@@ -48,12 +48,12 @@
             <span class="text-base font-medium">Scored: 100</span>
             <div class="mt-16">
                 <div class="flex items-center">
-                    <a class="mr-2"><mat-icon class="text-gray-400"
+                    <a (click)="redirectLeaderBoard()" class="mr-2"><mat-icon class="text-gray-400"
                             style="vertical-align: middle;">leaderboard</mat-icon></a>
-                    <a class="font-medium">Bảng xếp hạng</a>
+                    <a (click)="redirectLeaderBoard()" class="font-medium">Bảng xếp hạng</a>
                 </div>
                 <div class="flex items-center mt-2">
-                    <a class="mr-2"><mat-icon class="text-gray-400"
+                    <a (click)="redirectSubmission(contest.id, 'a', '')" class="mr-2"><mat-icon class="text-gray-400"
                             style="vertical-align: middle; font-size: 30px;">list</mat-icon></a>
                     <a (click)="redirectSubmission(contest.id, 'a', '')" class="font-medium">Tất cả bài nộp</a>
                 </div>

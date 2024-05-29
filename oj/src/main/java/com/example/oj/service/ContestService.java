@@ -28,4 +28,8 @@ public class ContestService {
     public void update(ContestDocument contestDocument) {
         contestRepository.save(contestDocument);
     }
+
+    public List<ContestDocument> getContestList() {
+        return contestRepository.findByState("PUBLIC");
+    }
 }

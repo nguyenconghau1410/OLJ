@@ -1,7 +1,8 @@
 <div class="main-problems pt-20">
     <h2>Danh sách bài</h2>
     <hr class="custom-divider">
-    <nz-pagination [nzPageIndex]="1" [nzTotal]="500"></nz-pagination>
+    <nz-pagination (nzPageIndexChange)="onPageIndexChange($event)" [nzPageIndex]="index" [nzPageSize]="12"
+        [nzTotal]="total"></nz-pagination>
     <div class="main-content">
         <div class="flex flex-wrap">
             <div class="table-content ml-0 mx-auto overflow-hidden rounded-lg">
@@ -10,6 +11,7 @@
                         <tr>
                             <th class="border border-gray-300 px-4 py-2" style="width: 15%;">ID</th>
                             <th class="border border-gray-300 px-4 py-2">Bài</th>
+                            <th class="border border-gray-300 px-4 py-2" style="width: 10%;">Bài</th>
                             <th class="border border-gray-300 px-4 py-2" style="width: 10%;">% AC</th>
                             <th class="border border-gray-300 px-4 py-2" style="width: 10%;"># AC</th>
                         </tr>
@@ -22,6 +24,7 @@
                             <td class="text-base border border-gray-300 px-4 py-2"><a
                                     [href]="'/problems/' + problem.id">{{problem.title}}</a>
                             </td>
+                            <td class="border border-gray-300 px-4 py-2">{{problem.difficulty}}</td>
                             <td class="border border-gray-300 px-4 py-2">#</td>
                             <td class="border border-gray-300 px-4 py-2">#</td>
                         </tr>
@@ -34,27 +37,27 @@
                     <p class="px-4 py-2 text-base">Tìm kiếm bài tập</p>
                 </div>
                 <div>
-                    <form id="filter-form" class="ml-4 mr-4 mb-4" name="form" action="" method="get">
-                        <input type="text" placeholder="Tìm bài..."
+                    <div class="ml-4 mr-4 mb-4">
+                        <input type="text" placeholder="Tìm bài..." [(ngModel)]="formSearch.search"
                             class="border border-gray-300 px-3 py-1 w-full rounded-md transition duration-300 ease-in-out hover:border-blue-500">
-                        <div class="mt-2">
-                            <input type="checkbox" class="size-3.5"><span> Ẩn các bài đã AC</span>
-                        </div>
-                        <p class="italic ">Dạng bài</p>
-                        <select id="mySelect" class="border border-gray-300 rounded-md px-3 py-1 w-full">
-                            <option value="" disabled selected hidden>Chọn một tùy chọn</option>
-                            <option value="option1">Tùy chọn 1</option>
-                            <option value="option2">Tùy chọn 2</option>
-                            <option value="option3">Tùy chọn 3</option>
+                        <div class="mt-4"></div>
+                        <span class="italic ">Dạng bài</span>
+                        <select id="mySelect" [(ngModel)]="formSearch.id"
+                            class="border border-gray-300 rounded-md px-3 py-1 w-full">
+                            <option value="">Chọn một tùy chọn</option>
+                            <option *ngFor="let topic of topics" [value]="topic.id">{{topic.name}}</option>
                         </select>
-                        <div class="flex items-center">
-                            <button type="button"
-                                class="bg-blue-500 text-white px-2 py-1 mt-2 rounded-md ml-auto">Tìm</button>
+                        <div class="flex items-center justify-end mt-8">
+                            <button (click)="onReset()"
+                                class="bg-blue-500 text-white px-2 py-1 mt-2 rounded-md">Reset</button>
+                            <button (click)="onSubmit()"
+                                class="bg-blue-500 text-white px-2 py-1 mt-2 rounded-md ml-4">Tìm</button>
                         </div>
-                    </form>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-    <nz-pagination [nzPageIndex]="1" [nzTotal]="500"></nz-pagination>
+    <nz-pagination (nzPageIndexChange)="onPageIndexChange($event)" [nzPageIndex]="index" [nzPageSize]="12"
+        [nzTotal]="total"></nz-pagination>
 </div>

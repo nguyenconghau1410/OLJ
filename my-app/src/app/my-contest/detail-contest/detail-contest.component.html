@@ -165,9 +165,10 @@
                     <span class="font-bold">Người nhận</span>
                 </div>
                 <div class="w-5/6">
-                    <select id="mySelect" class="border border-gray-300 rounded-md px-4 py-2 w-1/4">
-                        <option value="" selected>Tất cả thành viên đã tham gia contest</option>
-                        <option value="">Chỉ những thành viên đã nộp bài</option>
+                    <select id="mySelect" [(ngModel)]="selected"
+                        class="border border-gray-300 rounded-md px-4 py-2 w-1/4">
+                        <option value="all" selected>Tất cả thành viên đã tham gia contest</option>
+                        <!-- <option value="">Chỉ những thành viên đã nộp bài</option> -->
                     </select>
                 </div>
             </div>
@@ -176,10 +177,12 @@
                     <span class="font-bold">Message</span>
                 </div>
                 <div class="w-5/6">
-                    <textarea class="h-52 border border-gray-300 rounded w-1/4" name="" id=""></textarea>
+                    <textarea [(ngModel)]="content" class="h-52 border border-gray-300 rounded w-1/4" name=""
+                        id=""></textarea>
                 </div>
             </div>
-            <button class="mt-4 mr-4 bg-green-400 text-white py-2 px-4 border border-gray-200">
+            <button (click)="sendNotification()"
+                class="mt-4 mr-4 bg-green-400 text-white py-2 px-4 border border-gray-200">
                 Gửi tin nhắn
             </button>
         </div>
@@ -232,13 +235,23 @@
             </div>
         </div>
         <div *ngIf="index === 4">
-            <div class="flex justify-end">
-                <button class="mt-4 mr-4 bg-green-400 text-white py-2 px-4 rounded border border-gray-400">
-                    Accept All
-                </button>
-                <button class="mt-4 mr-4 bg-red-400 text-white py-2 px-4 rounded border border-gray-400">
-                    Refuse All
-                </button>
+            <div class="flex">
+                <div class="w-1/2">
+                    <button (click)="saveChange(4)"
+                        class="mt-4 mr-4 bg-blue-400 text-white py-2 px-4 rounded border border-gray-400">
+                        Lưu thay đổi
+                    </button>
+                </div>
+                <div class="w-1/2 flex justify-end">
+                    <button (click)="acceptedAll()"
+                        class="mt-4 mr-4 bg-green-400 text-white py-2 px-4 rounded border border-gray-400">
+                        Accept All
+                    </button>
+                    <button (click)="refuseAll()"
+                        class="mt-4 mr-4 bg-red-400 text-white py-2 px-4 rounded border border-gray-400">
+                        Refuse All
+                    </button>
+                </div>
             </div>
             <div class="mt-4 table-content  ml-0 mx-auto overflow-hidden">
                 <table class="w-full border-collapse border border-gray-300">
@@ -248,19 +261,24 @@
                             <th class="text-left px-4 py-2" style="width: 10%;">Tên thành viên</th>
                             <th class="px-4 py-2" style="width: 10%;">Khoa</th>
                             <th class="px-4 py-2" style="width: 10%;">Lớp</th>
+                            <th class="px-4 py-2" style="width: 10%;">Trạng thái</th>
                             <th class="px-4 py-2" style="width: 10%;"></th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr class="text-center border-bottom hover:bg-gray-100 cursor-pointer">
-                            <td class="text-left px-4 py-2">1.</td>
-                            <td class="text-left px-4 py-2">Nguyễn Công Hậu</td>
-                            <td class="px-4 py-2">Công nghệ thông tin</td>
-                            <td class="px-4 py-2">21ĐHTT02</td>
+                        <tr *ngFor="let user of signups; let i = index"
+                            class="text-center border-bottom hover:bg-gray-100 cursor-pointer">
+                            <td class="text-left px-4 py-2">{{i + 1}}.</td>
+                            <td class="text-left px-4 py-2">{{user.name}}</td>
+                            <td class="px-4 py-2">{{user.faculty}}</td>
+                            <td class="px-4 py-2">{{user.classname}}</td>
+                            <td class="px-4 py-2">{{contest.signups[i].status}}</td>
                             <td class="py-2">
-                                <a class="bg-gray-300 rounded-full py-1 px-1 mr-2"><mat-icon title="Cho phép tham gia"
+                                <a *ngIf="contest.signups[i].status === 'signedUp'" (click)="accepted(i)"
+                                    class="bg-gray-300 rounded-full py-1 px-1 mr-2"><mat-icon title="Cho phép tham gia"
                                         style="vertical-align: middle; color: green; font-size: 20px;">check</mat-icon></a>
-                                <a class="bg-gray-300 rounded-full py-1 px-1"><mat-icon title="Từ chối tham gia"
+                                <a *ngIf="contest.signups[i].status === 'signedUp'" (click)="refuse(i)"
+                                    class="bg-gray-300 rounded-full py-1 px-1"><mat-icon title="Từ chối tham gia"
                                         style="vertical-align: middle; color: red; font-size: 20px;">close</mat-icon></a>
                             </td>
                         </tr>

@@ -32,4 +32,11 @@ export class UserService {
       { headers: headers }
     )
   }
+
+  getUserById(id: string): Observable<any> {
+    return this.http.get(
+      `${API_URL.getUserById}/${id}`,
+      { headers: headers }
+    )
+  }
 }

@@ -1,0 +1,33 @@
+<div *ngIf="error === ''" class="main-content pt-20">
+    <h2>Bảng xếp hạng</h2>
+    <hr class="custom-divider">
+    <div class="mt-4 table-content  ml-0 mx-auto overflow-hidden">
+        <table class="w-full border-collapse border border-gray-300">
+            <thead class="bg-gray-100 text-black">
+                <tr>
+                    <th class="border border-gray-300 px-4 py-2" style="width: 5%;">Rank</th>
+                    <th class="text-left border border-gray-300 px-4 py-2" style="width: 10%;">ID</th>
+                    <th class="text-left border border-gray-300 px-4 py-2" style="width: 15%;">Tên thành viên</th>
+                    <th class="border border-gray-300 px-4 py-2" style="width: 10%;">Tổng điểm</th>
+                    <th class="border border-gray-300 px-4 py-2" style="width: 10%;">Solved</th>
+                    <th class="border border-gray-300 px-4 py-2" style="width: 5%;"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let top of leaderBoardList; let i = index"
+                    class="text-center border-bottom hover:bg-gray-100 cursor-pointer">
+                    <td class="px-4 py-2">{{i + 1}}.</td>
+                    <td class="text-left px-4 py-2">{{top['id']}}</td>
+                    <td class="text-left px-4 py-2">{{top['name']}}</td>
+                    <td class="px-4 py-2">{{top['totalScore']}}</td>
+                    <td class="px-4 py-2">{{top['totalSolutions']}}</td>
+                    <td class="px-4 py-2"><a (click)="redirect(top['id'])">View</a></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<div class="pt-20" *ngIf="error">
+    <h1 class="text-black flex justify-center items-center">Không tìm thấy trang</h1>
+
+</div>

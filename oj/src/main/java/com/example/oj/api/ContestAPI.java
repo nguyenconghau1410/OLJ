@@ -6,10 +6,7 @@ import com.example.oj.document.ContestDocument;
 import com.example.oj.document.DetailContest;
 import com.example.oj.document.ProblemDocument;
 import com.example.oj.document.UserDocument;
-import com.example.oj.dto.Participant;
-import com.example.oj.dto.ProblemSmall;
-import com.example.oj.dto.Submission;
-import com.example.oj.dto.TaskContest;
+import com.example.oj.dto.*;
 import com.example.oj.service.ContestService;
 import com.example.oj.service.DetailContestService;
 import com.example.oj.service.ProblemService;
@@ -45,7 +42,9 @@ public class ContestAPI {
     public ResponseEntity<List<ContestDocument>> getOne(@RequestHeader("Authorization") String authorizationHeader) {
         String email = utils.getEmailFromToken(authorizationHeader);
         if(email != null) {
-            return ResponseEntity.ok(contestService.getOne(email));
+            List<ContestDocument> contestDocumentList = contestService.getOne(email);
+            Collections.reverse(contestDocumentList);
+            return ResponseEntity.ok(contestDocumentList);
         }
         return null;
     }
@@ -82,6 +81,20 @@ public class ContestAPI {
             participants.add(userDocument);
         }
         return ResponseEntity.ok(participants);
+    }
+
+    @GetMapping("/get-signups/{id}")
+    public ResponseEntity<List<UserDocument>> getSignUps(@PathVariable String id) {
+        ContestDocument contestDocument = contestService.findOne(id);
+        List<UserDocument> signups = new ArrayList<>();
+        if(contestDocument.getSignups() != null) {
+            for (SignUp signUp: contestDocument.getSignups()) {
+                UserDocument userDocument = userService.findOneByEmail(signUp.getEmail());
+                signups.add(userDocument);
+            }
+        }
+
+        return ResponseEntity.ok(signups);
     }
 
     @PostMapping("/add-submission")
@@ -123,5 +136,22 @@ public class ContestAPI {
         List<DetailContest> detailContestList = detailContestService.getByContestIdAndProblemId(contestId, problemId);
         Collections.reverse(detailContestList);
         return ResponseEntity.ok(detailContestList);
+    }
+
+    @GetMapping("/get-leader-board/{contestId}")
+    public ResponseEntity<List<LeaderBoard>> getLeaderBoard(@PathVariable String contestId) {
+        return ResponseEntity.ok(detailContestService.getLeaderBoard(contestId));
+    }
+
+    @GetMapping("/get-detail-leaderboard/{contestId}/{userId}")
+    public ResponseEntity<List<DetailLeaderboard>> getDetailLeaderboard(@PathVariable String contestId, @PathVariable String userId) {
+        return ResponseEntity.ok(detailContestService.getDetailLeaderboard(contestId, userId));
+    }
+
+    @GetMapping("/get-contest-list")
+    public ResponseEntity<List<ContestDocument>> getContestList() {
+        List<ContestDocument> contestDocumentList = contestService.getContestList();
+        Collections.reverse(contestDocumentList);
+        return ResponseEntity.ok(contestDocumentList);
     }
 }

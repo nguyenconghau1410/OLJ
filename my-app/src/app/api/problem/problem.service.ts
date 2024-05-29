@@ -26,9 +26,9 @@ export class ProblemService {
     )
   }
 
-  getAllProblem(): Observable<any> {
+  getAllProblem(pageNumber: number): Observable<any> {
     return this.http.get(
-      API_URL.getAllProblem,
+      `${API_URL.getAllProblem}/${pageNumber}`,
     )
   }
 
@@ -69,6 +69,20 @@ export class ProblemService {
   getProblemByKeyword(keyword: string): Observable<any> {
     return this.http.get(
       `${API_URL.getProblemByKeyword}/${keyword}`,
+      { headers: headers }
+    )
+  }
+
+  getTotalRecord(): Observable<any> {
+    return this.http.get(
+      API_URL.getTotalRecordProblem
+    )
+  }
+
+  getSearch(form: any): Observable<any> {
+    return this.http.post(
+      API_URL.getSearchProblem,
+      form,
       { headers: headers }
     )
   }

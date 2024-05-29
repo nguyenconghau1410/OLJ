@@ -2,6 +2,8 @@ package com.example.oj.service;
 
 import com.example.oj.document.DetailContest;
 import com.example.oj.document.UserDocument;
+import com.example.oj.dto.DetailLeaderboard;
+import com.example.oj.dto.LeaderBoard;
 import com.example.oj.dto.Submission;
 import com.example.oj.dto.TaskContest;
 import com.example.oj.repository.DetailContestRepository;
@@ -58,5 +60,13 @@ public class DetailContestService {
     }
     public List<DetailContest> getByContestIdAndProblemId(String contestId, String problemId) {
         return detailContestRepository.findByContestIdAndProblemId(contestId, problemId);
+    }
+
+    public List<LeaderBoard> getLeaderBoard(String contestId) {
+        return detailContestRepository.getLeaderBoard(contestId);
+    }
+
+    public List<DetailLeaderboard> getDetailLeaderboard(String contestId, String userId) {
+        return detailContestRepository.getDetailLeaderBoard(contestId, userId);
     }
 }

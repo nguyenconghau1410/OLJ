@@ -18,6 +18,9 @@ import { ChallengesComponent } from './my-contest/challenges/challenges.componen
 import { ResultContestComponent } from './my-contest/result-contest/result-contest.component';
 import { SubmissionContestComponent } from './my-contest/submission-contest/submission-contest.component';
 import { MySubmissionProblemComponent } from './submissions/my-submission-problem/my-submission-problem.component';
+import { LeaderBoardComponent } from './my-contest/leader-board/leader-board.component';
+import { DetailRatingComponent } from './my-contest/detail-rating/detail-rating.component';
+import { ContestComponent } from './contest/contest.component';
 
 export const routes: Routes = [
     { path: 'login', component: LoginComponent },
@@ -45,4 +48,7 @@ export const routes: Routes = [
     { path: 'contests/:id/all-submission', component: SubmissionContestComponent },
     { path: 'contests/:id/my-submission', component: SubmissionContestComponent },
     { path: 'contests/:id/:problemId', component: SubmissionContestComponent },
+    { path: 'contests/:id/leaderboard/all', component: LeaderBoardComponent },
+    { path: 'contests/:id/leaderboard/:userId', component: DetailRatingComponent },
+    { path: 'contests', component: ContestComponent }
 ];

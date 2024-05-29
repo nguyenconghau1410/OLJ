@@ -1,4 +1,4 @@
-<div class="main-problems pt-20 pb-20">
+<div *ngIf="!error" class="main-problems pt-20 pb-20">
     <h2>Kết quả</h2>
     <hr class="custom-divider">
     <span *ngIf="!detailContest" class="text-xl">Không tìm thấy dữ liệu!</span>
@@ -39,9 +39,10 @@
                     </tr>
                     <tr class="text-base border-b border-gray-500 px-4 py-2">
                         <td>Điểm:</td>
-                        <td *ngIf="!detailContest!.point"><span nz-icon nzType="loading" nzTheme="outline"></span></td>
-                        <td *ngIf="detailContest!.point">
-                            {{detailContest!.point}}
+                        <td *ngIf="detailContest!.point === null"><span nz-icon nzType="loading"
+                                nzTheme="outline"></span></td>
+                        <td *ngIf="detailContest!.point !== null">
+                            {{formatNumber(detailContest!.point)}}
                         </td>
                     </tr>
                 </tbody>
@@ -86,4 +87,9 @@
             </div>
         </div>
     </div>
+</div>
+
+<div *ngIf="error" class="pt-20">
+    <h1 class="text-black flex justify-center items-center">Không tìm thấy trang</h1>
+
 </div>

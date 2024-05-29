@@ -27,20 +27,41 @@ export class SubmissionService {
     )
   }
 
-  getAll(): Observable<any> {
-    return this.http.get(API_URL.getAllSubmission)
+  getAll(pageNumber: number): Observable<any> {
+    return this.http.get(`${API_URL.getAllSubmission}/${pageNumber}`, { headers: headers })
   }
 
-  getSubmissionOfProblem(problemId: string): Observable<any> {
+  getSubmissionOfProblem(problemId: string, pageNumber: number): Observable<any> {
     return this.http.get(
-      `${API_URL.getSubmissionOfProblem}/${problemId}`,
+      `${API_URL.getSubmissionOfProblem}/${problemId}/${pageNumber}`,
       { headers: headers }
     )
   }
 
-  getSubmissionByProblem(problemId: string): Observable<any> {
+  getSubmissionByProblem(problemId: string, pageNumber: number): Observable<any> {
     return this.http.get(
-      `${API_URL.getSubmissionByProblem}/${problemId}`,
+      `${API_URL.getSubmissionByProblem}/${problemId}/${pageNumber}`,
+      { headers: headers }
+    )
+  }
+
+  count(): Observable<any> {
+    return this.http.get(
+      API_URL.countTotalSubmissions,
+      { headers: headers }
+    )
+  }
+
+  countSubmissionProblem(problemId: string, type: string): Observable<any> {
+    return this.http.get(
+      `${API_URL.countSubmissionProblem}/${problemId}/${type}`,
+      { headers: headers }
+    )
+  }
+
+  getStatistic(): Observable<any> {
+    return this.http.get(
+      API_URL.getStatistic,
       { headers: headers }
     )
   }

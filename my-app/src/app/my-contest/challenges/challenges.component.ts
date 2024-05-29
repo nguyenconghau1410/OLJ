@@ -124,6 +124,10 @@ export class ChallengesComponent {
     }
   }
 
+  redirectLeaderBoard() {
+    this.router.navigate(['contests', this.contest.id, 'leaderboard', 'all'])
+  }
+
   redirectAmin(contestId: string) {
     this.router.navigate(['my-contest'])
   }

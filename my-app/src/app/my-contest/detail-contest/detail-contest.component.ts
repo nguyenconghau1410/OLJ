@@ -11,6 +11,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { ProblemService } from '../../api/problem/problem.service';
 import { UserService } from '../../api/user/user.service';
 import { User } from '../../models/user.model';
+import { WebsocketService } from '../../service/websocket/websocket.service';
 @Component({
   selector: 'app-detail-contest',
   standalone: true,
@@ -24,6 +25,7 @@ export class DetailContestComponent {
   isChecked: boolean = false
   index = 0
   showAddProblemForm: boolean = false
+  // index 1
   problemsSearch: { id: string, title: string, email: string, point: number }[] = []
   problems: { id: string, title: string, email: string, point: number }[] = []
   problem: { id: string, title: string, email: string, point: number } = {
@@ -32,6 +34,7 @@ export class DetailContestComponent {
     email: '',
     point: 0
   }
+  // index 3
   users: User[] = []
   userSearch: string = ''
   user: User = {
@@ -43,13 +46,20 @@ export class DetailContestComponent {
     faculty: '',
     classname: ''
   }
+  // index 4
+  signups: User[] = []
+  // index 2
+  selected: string = ''
+  content: string = ''
+
   constructor(
     private contestService: ContestService,
     private problemService: ProblemService,
     private toastrService: ToastrService,
     private userService: UserService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private websocketService: WebsocketService
   ) { }
 
   ngOnInit() {
@@ -111,6 +121,11 @@ export class DetailContestComponent {
         )
         return
       }
+      this.contestService.getSignups(this.contest.id).subscribe(
+        (data) => {
+          this.signups = data
+        }
+      )
     }
     else if (index === 1) {
       this.contestService.getChallenges(this.contest.id).subscribe(
@@ -194,6 +209,7 @@ export class DetailContestComponent {
     }
   }
 
+  // index 2
   chooseProblem(p: { id: string, title: string, email: string, point: number }) {
     this.problem = p
     this.problemsSearch = []
@@ -223,6 +239,7 @@ export class DetailContestComponent {
     }
   }
 
+  // redirect
   redirect(id: string) {
     this.router.navigate(['problems', id])
   }
@@ -235,6 +252,7 @@ export class DetailContestComponent {
     this.router.navigate(['contests', contestId, 'challenges'])
   }
 
+  // index 3
   clickUser() {
     this.userSearch = this.user.email
     this.user.id = ''
@@ -288,4 +306,49 @@ export class DetailContestComponent {
   handYN(i: number): string {
     return this.contest.participants[i].joined ? "YES" : "NO"
   }
+
+  //index 4
+
+  accepted(index: number) {
+    this.contest.signups[index].status = 'Accepted'
+    this.contest.participants.push({ email: this.contest.signups[index].email, joined: false })
+    this.toastrService.success(
+      `Đã chấp nhập`, '', { timeOut: 2000 }
+    )
+  }
+
+  refuse(index: number) {
+    this.contest.signups[index].status = 'Refuse'
+    this.toastrService.success(
+      `Đã từ chối`, '', { timeOut: 2000 }
+    )
+  }
+
+  acceptedAll() {
+    for (let i = 0; i < this.contest.signups.length; i++) {
+      if (this.contest.signups[i].status === 'signedUp') {
+        this.contest.signups[i].status = 'Accepted'
+        this.contest.participants.push({ email: this.contest.signups[i].email, joined: false })
+      }
+    }
+    this.toastrService.success(
+      `Đã chấp nhập tất cả`, '', { timeOut: 2000 }
+    )
+  }
+
+  refuseAll() {
+    for (let i = 0; i < this.contest.signups.length; i++) {
+      if (this.contest.signups[i].status === 'signedUp')
+        this.contest.signups[i].status = 'Refuse'
+    }
+    this.toastrService.success(
+      `Đã từ chối tất cả`, '', { timeOut: 2000 }
+    )
+  }
+
+  // index 2
+  sendNotification() {
+    this.websocketService.sendMessage('/app/notify', { id: this.contest.id, content: this.content })
+  }
+
 }

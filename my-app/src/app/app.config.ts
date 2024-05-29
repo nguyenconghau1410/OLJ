@@ -6,6 +6,7 @@ import { GoogleLoginProvider, SocialAuthServiceConfig } from '@abacritt/angularx
 import { provideHttpClient } from '@angular/common/http';
 import { provideToastr } from 'ngx-toastr';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
 export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(routes),
@@ -27,6 +28,7 @@ export const appConfig: ApplicationConfig = {
         }
       } as SocialAuthServiceConfig
     },
-    provideToastr(), provideAnimationsAsync()
+    provideToastr(), provideAnimationsAsync(),
+    provideCharts(withDefaultRegisterables())
   ]
 };

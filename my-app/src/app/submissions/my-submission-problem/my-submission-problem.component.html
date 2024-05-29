@@ -1,6 +1,8 @@
 <div class="main-problems pt-20 pb-20">
-    <h2>Danh sách bài nộp</h2>
+    <h2>{{title}}</h2>
     <hr class="custom-divider">
+    <nz-pagination (nzPageIndexChange)="onPageIndexChange($event)" [nzPageIndex]="index" [nzPageSize]="15"
+        [nzTotal]="total"></nz-pagination>
     <div class="main-content">
         <div class="table-content ml-0 mx-auto overflow-hidden rounded-lg">
             <table class="w-full border-collapse border border-gray-300">
