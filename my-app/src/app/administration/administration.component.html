@@ -9,6 +9,10 @@
             </button></div>
     </div>
     <hr class="custom-divider">
+    <div class="mt-4">
+        <nz-pagination (nzPageIndexChange)="onPageIndexChange($event)" [nzPageIndex]="pageIndex" [nzPageSize]="pageSize"
+            [nzTotal]="total"></nz-pagination>
+    </div>
     <div class="mt-4 table-content  ml-0 mx-auto overflow-hidden">
         <table class="w-full border-collapse border border-gray-300 text-left">
             <thead class="bg-gray-100 text-black">
@@ -20,7 +24,7 @@
                 </tr>
             </thead>
             <tbody>
-                <tr *ngFor="let problem of problems">
+                <tr *ngFor="let problem of problems; let i = index">
                     <td class="border border-gray-300 px-4 py-2"><a>{{problem.id}}</a>
                     </td>
                     <td class="text-base border border-gray-300 px-4 py-2"><a>{{problem.title}}</a>
@@ -31,14 +35,19 @@
                                 title="Turn on public mode">radio_button_checked</mat-icon></a>
                         <a (click)="edit(problem.id)"><mat-icon style="vertical-align: middle;"
                                 title="Edit">edit</mat-icon></a>
-                        <a><mat-icon style="vertical-align: middle;" title="Delete">delete</mat-icon></a>
+                        <a (click)="delete(problem.id, i)"><mat-icon style="vertical-align: middle;"
+                                title="Delete">delete</mat-icon></a>
                     </td>
                 </tr>
             </tbody>
         </table>
     </div>
 </div>
-
+<nz-modal [(nzVisible)]="isVisible" nzTitle="Thông báo" [nzCancelText]="textCancel" [nzOkText]="textOk"
+    (nzOnCancel)="handleCancel()" (nzOnOk)="handleOk()">
+    <p *nzModalContent>Bạn muốn xóa Problem này ?
+    </p>
+</nz-modal>
 <div class="pt-20" *ngIf="check === false">
     <h1 class="text-black flex justify-center items-center">Không tìm thấy trang</h1>
 

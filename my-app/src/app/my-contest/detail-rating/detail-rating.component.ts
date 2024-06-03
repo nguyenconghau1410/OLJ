@@ -93,6 +93,10 @@ export class DetailRatingComponent {
     this.router.navigate(['contests', submissionId])
   }
 
+  redirectContest(contestId: string) {
+    this.router.navigate(['contests', contestId, 'challenges'])
+  }
+
   check(): boolean {
     let ok = true
     this.dataService.user?.subscribe(

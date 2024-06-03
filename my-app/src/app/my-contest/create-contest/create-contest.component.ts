@@ -30,7 +30,8 @@ export class CreateContestComponent {
     hourEnd: '',
     mode: '',
     signups: [],
-    createdBy: ''
+    createdBy: '',
+    finished: false
   }
   checkbox = false
 

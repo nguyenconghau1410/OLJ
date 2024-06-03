@@ -21,6 +21,8 @@ import { MySubmissionProblemComponent } from './submissions/my-submission-proble
 import { LeaderBoardComponent } from './my-contest/leader-board/leader-board.component';
 import { DetailRatingComponent } from './my-contest/detail-rating/detail-rating.component';
 import { ContestComponent } from './contest/contest.component';
+import { MySubmissionComponent } from './profile/my-submission/my-submission.component';
+import { HistoryContestComponent } from './profile/history-contest/history-contest.component';
 
 export const routes: Routes = [
     { path: 'login', component: LoginComponent },
@@ -34,7 +36,8 @@ export const routes: Routes = [
     { path: 'problems/:problemId/all-submissions', component: MySubmissionProblemComponent },
     { path: 'users', component: UsersComponent },
     { path: 'profile', component: ProfileComponent },
-    { path: 'profile/my-submission', component: ProfileComponent },
+    { path: 'history-contest', component: HistoryContestComponent },
+    { path: 'my-submission', component: MySubmissionComponent },
     { path: 'administration/create-problem', component: CreateProblemComponent },
     { path: 'administration/edit-problem/:id', component: EditProblemComponent },
     { path: 'my-contest', component: MyContestComponent },

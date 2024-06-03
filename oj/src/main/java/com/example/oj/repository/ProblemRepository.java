@@ -12,7 +12,9 @@ public interface ProblemRepository extends MongoRepository<ProblemDocument, Stri
     Integer countByState(String state);
     Page<ProblemDocument> findAllByState(String state, Pageable pageable);
 
-    List<ProblemDocument> findAllByEmail(String email);
+    Page<ProblemDocument> findAllByEmail(String email, Pageable pageable);
+
+    Integer countByEmail(String email);
     List<ProblemDocument> findByTitleContaining(String keyword);
     Page<ProblemDocument> findByTitleContaining(String keyword, Pageable pageable);
     Integer countByTitleContaining(String keyword);

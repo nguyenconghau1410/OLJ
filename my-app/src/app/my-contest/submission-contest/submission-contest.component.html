@@ -1,6 +1,10 @@
 <div class="main-content pt-20">
-    <h2>Tất cả submission</h2>
+    <h2>{{title}}</h2>
     <hr class="custom-divider">
+    <div class="mt-4">
+        <nz-pagination (nzPageIndexChange)="onPageIndexChange($event)" [nzPageIndex]="pageIndex" [nzPageSize]="pageSize"
+            [nzTotal]="total"></nz-pagination>
+    </div>
     <div class="mt-4 table-content  ml-0 mx-auto overflow-hidden">
         <table class="w-full border-collapse border border-gray-300">
             <thead class="bg-gray-100 text-black">
@@ -29,5 +33,9 @@
                 </tr>
             </tbody>
         </table>
+    </div>
+    <div class="mt-4">
+        <nz-pagination (nzPageIndexChange)="onPageIndexChange($event)" [nzPageIndex]="pageIndex" [nzPageSize]="pageSize"
+            [nzTotal]="total"></nz-pagination>
     </div>
 </div>

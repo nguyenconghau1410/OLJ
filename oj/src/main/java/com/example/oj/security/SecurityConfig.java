@@ -30,7 +30,7 @@ public class SecurityConfig {
                                 .requestMatchers("/api/v1/file/**").permitAll()
                                 .requestMatchers("/api/v1/submission/get-all").permitAll()
                                 .requestMatchers("/api/v1/problem/get-all/**", "/api/v1/problem/get-total-document", "/api/v1/problem/get/**").permitAll()
-                                .requestMatchers("/api/v1/contest/get-contest-list").permitAll()
+                                .requestMatchers("/api/v1/contest/get-contest-list/**", "/api/v1/contest/count-contest/**" ).permitAll()
                                 .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

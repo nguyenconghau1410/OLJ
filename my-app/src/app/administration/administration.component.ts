@@ -1,28 +1,39 @@
 import { Component } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ProblemService } from '../api/problem/problem.service';
-import { CheckStatusService } from '../service/check/check-status.service';
+import { NzModalModule } from 'ng-zorro-antd/modal';
 import { CommonModule } from '@angular/common';
 import { ToastrService } from 'ngx-toastr';
 import { DataService } from '../service/data/data.service';
+import { NzPaginationModule } from 'ng-zorro-antd/pagination';
 
 @Component({
   selector: 'app-administration',
   standalone: true,
-  imports: [MatIconModule, CommonModule],
+  imports: [MatIconModule, CommonModule, NzPaginationModule, NzModalModule],
   templateUrl: './administration.component.html',
   styleUrl: './administration.component.scss'
 })
 export class AdministrationComponent {
   problems: { id: string, title: string, state: string }[] = []
   check: boolean = true
+
+  pageIndex = 1
+  pageSize = 10
+  total = 0
+
+  isVisible = false
+  id: string = ''
+  index: number = -1
+  textOk = 'Ok'
+  textCancel = 'Đóng'
   constructor(
     private router: Router,
     private problemService: ProblemService,
-    private status: CheckStatusService,
     private toastrService: ToastrService,
-    private dataService: DataService
+    private dataService: DataService,
+    private activatedRoute: ActivatedRoute
   ) { }
 
   ngOnInit() {
@@ -35,14 +46,43 @@ export class AdministrationComponent {
       }
     )
     if (!this.check) return
-    this.problemService.getProblemByCreator().subscribe(
+
+    this.activatedRoute.queryParams.subscribe(params => {
+      if (params['page']) {
+        this.pageIndex = params['page']
+        this.problemService.getProblemByCreator(this.pageIndex - 1).subscribe(
+          (data) => {
+            if (data) {
+              this.problems = data
+            }
+          },
+          (error) => {
+            this.toastrService.error(
+              'Đã có lỗi xảy ra !', '', { timeOut: 2000 }
+            )
+          }
+        )
+        return
+      }
+    })
+
+    this.problemService.countProblemByCreator().subscribe(
+      (data) => {
+        if (data) {
+          this.total = data['total']
+        }
+      }
+    )
+    this.problemService.getProblemByCreator(this.pageIndex - 1).subscribe(
       (data) => {
         if (data) {
           this.problems = data
         }
       },
       (error) => {
-        this.status.checkStatusCode(error.status)
+        this.toastrService.error(
+          'Đã có lỗi xảy ra !', '', { timeOut: 2000 }
+        )
       }
     )
   }
@@ -71,5 +111,46 @@ export class AdministrationComponent {
         )
       }
     )
+  }
+
+
+  handleCancel(): void {
+    this.isVisible = false;
+  }
+
+  handleOk() {
+    this.problemService.delete(this.id).subscribe(
+      (data) => {
+        if (data) {
+          if (data['result'] === 'success') {
+            this.toastrService.success(
+              'Xóa thành công!', '', { timeOut: 2000 }
+            )
+            this.problems.splice(this.index)
+          }
+        }
+        else {
+          this.toastrService.success(
+            'Bạn không có quyền xóa!', '', { timeOut: 2000 }
+          )
+        }
+      },
+      (error) => {
+        this.toastrService.error(
+          `Đã có lỗi xảy ra, hãy thử lại`, '', { timeOut: 2000 }
+        )
+      }
+    )
+  }
+
+
+  delete(id: string, index: number) {
+    this.isVisible = true
+    this.id = id
+    this.index = index
+  }
+
+  onPageIndexChange(event: number) {
+    this.router.navigate(['administration'], { queryParams: { page: event } })
   }
 }

@@ -1,4 +1,4 @@
-<div class="pt-20 pb-40">
+<div *ngIf="!error" class="pt-20 pb-40">
     <div class="mt-4 mb-6">
         <span class="ml-200"><a class="text-gray-700" href="/my-contest">Quản lí Contest</a></span> > <span
             class="text-gray-700">Chỉnh sửa
@@ -127,6 +127,10 @@
                     </button>
                 </div>
             </div>
+            <div class="mt-4">
+                <nz-pagination (nzPageIndexChange)="onPageIndexChange($event)" [nzPageIndex]="page"
+                    [nzPageSize]="pageSize" [nzTotal]="total"></nz-pagination>
+            </div>
             <div class="mt-4 table-content  ml-0 mx-auto overflow-hidden">
                 <table class="w-full border-collapse border border-gray-300">
                     <thead class="text-gray-600">
@@ -206,11 +210,14 @@
                     </div>
                 </div>
             </div>
+            <div class="mt-4">
+                <nz-pagination (nzPageIndexChange)="onPageIndexChange($event)" [nzPageIndex]="page"
+                    [nzPageSize]="pageSize" [nzTotal]="total"></nz-pagination>
+            </div>
             <div class="mt-4 table-content  ml-0 mx-auto overflow-hidden">
                 <table class="w-full border-collapse border border-gray-300">
                     <thead class="text-gray-600">
                         <tr>
-                            <th class="text-left px-4 py-2" style="width: 5%;">STT</th>
                             <th class="text-left px-4 py-2" style="width: 20%;">Tên thành viên</th>
                             <th class="px-4 py-2" style="width: 20%;">Email</th>
                             <th class="px-4 py-2" style="width: 20%;">Khoa</th>
@@ -222,7 +229,6 @@
                     <tbody>
                         <tr *ngFor="let member of users; let i = index"
                             class="text-center border-bottom hover:bg-gray-100 cursor-pointer">
-                            <td class="text-left px-4 py-2">{{i + 1}}.</td>
                             <td class="text-left px-4 py-2">{{member.name}}</td>
                             <td class="px-4 py-2">{{member.email}}</td>
                             <td class="px-4 py-2">{{member.faculty}}</td>
@@ -252,6 +258,10 @@
                         Refuse All
                     </button>
                 </div>
+            </div>
+            <div class="mt-4">
+                <nz-pagination (nzPageIndexChange)="onPageIndexChange($event)" [nzPageIndex]="page"
+                    [nzPageSize]="pageSize" [nzTotal]="total"></nz-pagination>
             </div>
             <div class="mt-4 table-content  ml-0 mx-auto overflow-hidden">
                 <table class="w-full border-collapse border border-gray-300">
@@ -284,6 +294,26 @@
                         </tr>
                     </tbody>
                 </table>
+            </div>
+        </div>
+        <div *ngIf="index === 5">
+            <div class="flex mt-4 items-center">
+                <div class="w-1/3 font-bold">
+                    <p>Số lượng đăng ký:</p>
+                    <p>Số lượng tham gia:</p>
+                    <p>Số lượng thành viên đã submit code:</p>
+                    <p>Tổng số bài nộp:</p>
+                </div>
+                <div class="w-1/3">
+                    <p>{{signedUp()}}</p>
+                    <p>{{joined()}}</p>
+                    <p>{{statisticUser['count']}}</p>
+                    <p>{{statisticUser['total']}}</p>
+                </div>
+                <div class="w-1/3">
+                    <canvas baseChart width="160" height="160" type="pie" [data]="chartData">
+                    </canvas>
+                </div>
             </div>
         </div>
     </div>
@@ -340,4 +370,9 @@
             </div>
         </div>
     </div>
+</div>
+
+<div *ngIf="error" class="pt-20">
+    <h1 class="text-black flex justify-center items-center">Không tìm thấy trang</h1>
+
 </div>

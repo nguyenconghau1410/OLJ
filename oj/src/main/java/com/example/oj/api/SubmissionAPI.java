@@ -3,6 +3,7 @@ package com.example.oj.api;
 import com.example.oj.constant.Utils;
 import com.example.oj.document.SubmissionDocument;
 import com.example.oj.dto.Statistic;
+import com.example.oj.dto.StatisticContest;
 import com.example.oj.dto.Submission;
 import com.example.oj.service.SubmissionService;
 import lombok.RequiredArgsConstructor;
@@ -52,6 +53,18 @@ public class SubmissionAPI {
         return ResponseEntity.ok(mp);
     }
 
+    @GetMapping("/get-my-submission/{pageNumber}")
+    public ResponseEntity<List<SubmissionDocument>> getMySubmission(@RequestHeader("Authorization") String authorizationHeader, @PathVariable Integer pageNumber) {
+        String email = utils.getEmailFromToken(authorizationHeader);
+        return ResponseEntity.ok(submissionService.getSubmissionByUserId(email, pageNumber));
+    }
+
+    @GetMapping("/count-my-submission")
+    public ResponseEntity<Map<String, Integer>> countMySubmission(@RequestHeader("Authorization") String authorizationHeader) {
+        String email = utils.getEmailFromToken(authorizationHeader);
+        return ResponseEntity.ok(submissionService.countMySubmission(email));
+    }
+
     @GetMapping("/get-by-problemId/{problemId}/{pageNumber}")
     public ResponseEntity<List<SubmissionDocument>> getSubmissionOfProblem(@PathVariable String problemId, @PathVariable Integer pageNumber) {
         List<SubmissionDocument> submissionDocumentList = submissionService.getSubmissionByProblem(problemId, pageNumber);
@@ -73,5 +86,11 @@ public class SubmissionAPI {
     @GetMapping("/get-statistic")
     public ResponseEntity<List<Statistic>> getStatistic() {
         return ResponseEntity.ok(submissionService.getStatistic());
+    }
+
+    @GetMapping("/get-figure")
+    public ResponseEntity<Map<String, Long>> getFigure(@RequestHeader("Authorization") String authorizationHeader) {
+        String email = utils.getEmailFromToken(authorizationHeader);
+        return ResponseEntity.ok(submissionService.getFigure(email));
     }
 }

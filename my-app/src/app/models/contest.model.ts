@@ -13,5 +13,6 @@ export interface Contest {
     participants: { email: string, joined: boolean }[],
     state: string,
     mode: string,
-    createdBy: string
+    createdBy: string,
+    finished: boolean
 }

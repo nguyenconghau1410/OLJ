@@ -10,7 +10,7 @@ import { User } from '../models/user.model';
 import { MatIconModule } from '@angular/material/icon';
 import { NzPaginationModule } from 'ng-zorro-antd/pagination';
 import { BaseChartDirective } from 'ng2-charts';
-import { ChartOptions, ChartType } from 'chart.js';
+import { ChartOptions } from 'chart.js';
 
 @Component({
   selector: 'app-submissions',

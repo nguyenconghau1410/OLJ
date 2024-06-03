@@ -9,3 +9,4 @@ public class LeaderBoard {
     private int totalSolutions;
     private String name;
 }
+

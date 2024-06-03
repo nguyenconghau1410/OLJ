@@ -22,9 +22,16 @@ export class ContestService {
     )
   }
 
-  getOne(): Observable<any> {
+  getOne(pageNumber: number): Observable<any> {
     return this.http.get(
-      API_URL.getContest,
+      `${API_URL.getContestByCreator}/${pageNumber}`,
+      { headers: headers }
+    )
+  }
+
+  countContest(): Observable<any> {
+    return this.http.get(
+      API_URL.countContest,
       { headers: headers }
     )
   }
@@ -44,23 +51,23 @@ export class ContestService {
     )
   }
 
-  getChallenges(id: string): Observable<any> {
+  getChallenges(id: string, pageNumber: number): Observable<any> {
     return this.http.get(
-      `${API_URL.getChallenges}/${id}`,
+      `${API_URL.getChallenges}/${id}/${pageNumber}`,
       { headers: headers },
     )
   }
 
-  getParticipants(id: string): Observable<any> {
+  getParticipants(id: string, pageNumber: number): Observable<any> {
     return this.http.get(
-      `${API_URL.getParticipants}/${id}`,
+      `${API_URL.getParticipants}/${id}/${pageNumber}`,
       { headers: headers }
     )
   }
 
-  getSignups(id: string): Observable<any> {
+  getSignups(id: string, pageNumber: number): Observable<any> {
     return this.http.get(
-      `${API_URL.getSignups}/${id}`,
+      `${API_URL.getSignups}/${id}/${pageNumber}`,
       { headers: headers }
     )
   }
@@ -80,30 +87,37 @@ export class ContestService {
     )
   }
 
-  getAllSubmissionOfContest(id: string): Observable<any> {
+  countSubmissionsContest(contestId: string, userId: string, problemId: string): Observable<any> {
     return this.http.get(
-      `${API_URL.getAllSubmissionOfContest}/${id}`,
+      `${API_URL.countSubmissionsContest}/${contestId}/${userId}/${problemId}`,
       { headers: headers }
     )
   }
 
-  getMySubmissionOfContest(id: string): Observable<any> {
+  getAllSubmissionOfContest(id: string, pageNumber: number): Observable<any> {
     return this.http.get(
-      `${API_URL.getMySubmissionOfContest}/${id}`,
+      `${API_URL.getAllSubmissionOfContest}/${id}/${pageNumber}`,
       { headers: headers }
     )
   }
 
-  getSubmissionOfProblemInContest(id: string, problemId: string): Observable<any> {
+  getMySubmissionOfContest(id: string, pageNumber: number): Observable<any> {
     return this.http.get(
-      `${API_URL.getSubmissionOfProblemInContest}/${id}/${problemId}`,
+      `${API_URL.getMySubmissionOfContest}/${id}/${pageNumber}`,
       { headers: headers }
     )
   }
 
-  getLeaderBoardList(id: string): Observable<any> {
+  getSubmissionOfProblemInContest(id: string, problemId: string, pageNumber: number): Observable<any> {
     return this.http.get(
-      `${API_URL.getLeaderBoardList}/${id}`,
+      `${API_URL.getSubmissionOfProblemInContest}/${id}/${problemId}/${pageNumber}`,
+      { headers: headers }
+    )
+  }
+
+  getLeaderBoardList(id: string, pageNumber: number): Observable<any> {
+    return this.http.get(
+      `${API_URL.getLeaderBoardList}/${id}/${pageNumber}`,
       { headers: headers }
     )
   }
@@ -115,9 +129,57 @@ export class ContestService {
     )
   }
 
-  getContestList(): Observable<any> {
+  getContestList(pageNumber: number, isFinished: boolean): Observable<any> {
     return this.http.get(
-      API_URL.getContestList
+      `${API_URL.getContestList}/${pageNumber}/${isFinished}`
+    )
+  }
+
+  countContestList(isFinished: boolean): Observable<any> {
+    return this.http.get(
+      `${API_URL.countContestList}/${isFinished}`,
+    )
+  }
+
+  getStatisticContest(id: string): Observable<any> {
+    return this.http.get(
+      `${API_URL.getStatisticContest}/${id}`,
+      { headers: headers }
+    )
+  }
+
+  getStatisticListContest(id: string): Observable<any> {
+    return this.http.get(
+      `${API_URL.getStatisticListContest}/${id}`,
+      { headers: headers }
+    )
+  }
+
+  countLeaderBoard(id: string): Observable<any> {
+    return this.http.get(
+      `${API_URL.countLeaderBoard}/${id}`,
+      { headers: headers }
+    )
+  }
+
+  countHistoryContest(): Observable<any> {
+    return this.http.get(
+      API_URL.countHistoryContest,
+      { headers: headers }
+    )
+  }
+
+  getHistoryContest(pageNumber: number): Observable<any> {
+    return this.http.get(
+      `${API_URL.getHistoryContest}/${pageNumber}`,
+      { headers: headers }
+    )
+  }
+
+  getTopRating(contestId: string): Observable<any> {
+    return this.http.get(
+      `${API_URL.getTopRating}/${contestId}`,
+      { headers: headers }
     )
   }
 }

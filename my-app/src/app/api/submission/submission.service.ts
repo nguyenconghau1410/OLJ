@@ -65,4 +65,25 @@ export class SubmissionService {
       { headers: headers }
     )
   }
+
+  countMySubmission(): Observable<any> {
+    return this.http.get(
+      API_URL.countMySubmissions,
+      { headers: headers }
+    )
+  }
+
+  getMySubmission(pageNumber: number): Observable<any> {
+    return this.http.get(
+      `${API_URL.getMySubmisisons}/${pageNumber}`,
+      { headers: headers }
+    )
+  }
+
+  getFigure(): Observable<any> {
+    return this.http.get(
+      API_URL.getFigure,
+      { headers: headers }
+    )
+  }
 }

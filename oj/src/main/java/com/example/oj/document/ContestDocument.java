@@ -26,4 +26,6 @@ public class ContestDocument {
     private List<Participant> participants;
     private String state;
     private String mode;
+    private String createdAt;
+    private boolean isFinished;
 }

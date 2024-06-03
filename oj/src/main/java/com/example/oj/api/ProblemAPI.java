@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 @RestController
@@ -34,6 +35,7 @@ public class ProblemAPI {
             problemDocument.setEmail(email);
         }
         problemDocument.setState("PRIVATE");
+        problemDocument.setCreatedAt(LocalDateTime.now().toString());
         ProblemDocument problem = problemService.insert(problemDocument);
         for(var x : topics) {
             TopicProblemDocument topicProblemDocument = new TopicProblemDocument();
@@ -74,10 +76,22 @@ public class ProblemAPI {
         problemService.update(topicProblem);
     }
 
-    @GetMapping("/get-by-creator")
-    public ResponseEntity<List<ProblemSmall>> getProblemByCreator(@RequestHeader("Authorization") String authorizationHeader) {
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<Map<String, String>> deleteProblem(@RequestHeader("Authorization") String authorizationHeader, @PathVariable String id) {
         String email = utils.getEmailFromToken(authorizationHeader);
-        return ResponseEntity.ok(problemService.findByCreator(email));
+        return ResponseEntity.ok(problemService.deleteProblem(id, email));
+    }
+
+    @GetMapping("/get-by-creator/{pageNumber}")
+    public ResponseEntity<List<ProblemSmall>> getProblemByCreator(@RequestHeader("Authorization") String authorizationHeader, @PathVariable int pageNumber) {
+        String email = utils.getEmailFromToken(authorizationHeader);
+        return ResponseEntity.ok(problemService.findByCreator(email, pageNumber));
+    }
+
+    @GetMapping("/count-by-creator")
+    public ResponseEntity<Map<String, Integer>> countProblemByCreator(@RequestHeader("Authorization") String authorizationHeader) {
+        String email = utils.getEmailFromToken(authorizationHeader);
+        return ResponseEntity.ok(problemService.countByEmail(email));
     }
 
     @GetMapping("/get-by-keyword/{keyword}")

@@ -5,11 +5,12 @@ import { ActivatedRoute, Router, UrlSegment } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { DataService } from '../../service/data/data.service';
 import { User } from '../../models/user.model';
+import { NzPaginationModule } from 'ng-zorro-antd/pagination';
 
 @Component({
   selector: 'app-submission-contest',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, NzPaginationModule],
   templateUrl: './submission-contest.component.html',
   styleUrl: './submission-contest.component.scss'
 })
@@ -17,7 +18,13 @@ export class SubmissionContestComponent {
   detailContestList: DetailContest[] = []
   error = ''
   problemId = ''
+  contestId = ''
+  title = ''
   user!: User
+  total = 0
+  pageSize = 5
+  pageIndex = 1
+  type!: string
   constructor(
     private contestService: ContestService,
     private router: Router,
@@ -30,12 +37,12 @@ export class SubmissionContestComponent {
       this.router.navigate(['login'])
       return
     }
-    this.checkForMySubmission()
     this.dataService.user?.subscribe(
       user => {
         this.user = user
       }
     )
+    this.checkForMySubmission()
   }
 
   checkForMySubmission() {
@@ -43,10 +50,23 @@ export class SubmissionContestComponent {
       const hasAllSubmission = segments.some(segment => segment.path === 'all-submission');
       const hasMySubmission = segments.some(segment => segment.path === 'my-submission');
       if (hasAllSubmission) {
+        this.title = "Tất cả submission"
+        this.type = 'all'
         this.activatedRoute.params.subscribe(params => {
           const id = params['id']
+          this.contestId = id
           if (id) {
-            this.contestService.getAllSubmissionOfContest(id).subscribe(
+            this.contestService.countSubmissionsContest(id, 'empty', 'empty').subscribe(
+              (data) => {
+                if (data) {
+                  this.total = data['count']
+                }
+              },
+              (error) => {
+                this.error = `Đã có lỗi xảy ra: ${error.status}`
+              }
+            )
+            this.contestService.getAllSubmissionOfContest(id, this.pageIndex - 1).subscribe(
               (data) => {
                 if (data) {
                   this.detailContestList = data
@@ -60,10 +80,23 @@ export class SubmissionContestComponent {
         })
       }
       else if (hasMySubmission) {
+        this.title = "Các bài nộp"
+        this.type = 'my-self'
         this.activatedRoute.params.subscribe(params => {
           const id = params['id']
+          this.contestId = id
           if (id) {
-            this.contestService.getMySubmissionOfContest(id).subscribe(
+            this.contestService.countSubmissionsContest(id, this.user.id, 'empty').subscribe(
+              (data) => {
+                if (data) {
+                  this.total = data['count']
+                }
+              },
+              (error) => {
+                this.error = `Đã có lỗi xảy ra: ${error.status}`
+              }
+            )
+            this.contestService.getMySubmissionOfContest(id, this.pageIndex - 1).subscribe(
               (data) => {
                 if (data) {
                   this.detailContestList = data
@@ -77,15 +110,29 @@ export class SubmissionContestComponent {
         })
       }
       else {
+        this.type = 'others'
         this.activatedRoute.params.subscribe(params => {
           const id = params['id']
+          this.contestId = id
           const problemId = params['problemId']
           this.problemId = problemId
           if (id && problemId) {
-            this.contestService.getSubmissionOfProblemInContest(id, problemId).subscribe(
+            this.contestService.countSubmissionsContest(id, 'empty', problemId).subscribe(
+              (data) => {
+                if (data) {
+                  this.total = data['count']
+                }
+              },
+              (error) => {
+                this.error = `Đã có lỗi xảy ra: ${error.status}`
+              }
+            )
+
+            this.contestService.getSubmissionOfProblemInContest(id, problemId, this.pageIndex - 1).subscribe(
               (data) => {
                 if (data) {
                   this.detailContestList = data
+                  this.title = `Bài nộp ${this.detailContestList[0].title}`
                 }
               },
               (error) => {
@@ -126,6 +173,48 @@ export class SubmissionContestComponent {
       ok = false
     }
     return ok
+  }
+
+
+  onPageIndexChange(event: number) {
+    this.pageIndex = event
+    if (this.type === 'all') {
+      this.contestService.getAllSubmissionOfContest(this.contestId, this.pageIndex - 1).subscribe(
+        (data) => {
+          if (data) {
+            this.detailContestList = data
+          }
+        },
+        (error) => {
+          this.error = `Đã có lỗi xảy ra: ${error.status}`
+        }
+      )
+    }
+    else if (this.type === 'my-self') {
+      this.contestService.getMySubmissionOfContest(this.contestId, this.pageIndex - 1).subscribe(
+        (data) => {
+          if (data) {
+            this.detailContestList = data
+          }
+        },
+        (error) => {
+          this.error = `Đã có lỗi xảy ra: ${error.status}`
+        }
+      )
+    }
+    else {
+      this.contestService.getSubmissionOfProblemInContest(this.contestId, this.problemId, this.pageIndex - 1).subscribe(
+        (data) => {
+          if (data) {
+            this.detailContestList = data
+            this.title = `Bài nộp ${this.detailContestList[0].title}`
+          }
+        },
+        (error) => {
+          this.error = `Đã có lỗi xảy ra: ${error.status}`
+        }
+      )
+    }
   }
 }
 

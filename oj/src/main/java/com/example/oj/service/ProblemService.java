@@ -4,11 +4,10 @@ import com.example.oj.document.ProblemDocument;
 
 import com.example.oj.document.TopicDocument;
 import com.example.oj.document.TopicProblemDocument;
+import com.example.oj.document.UserDocument;
 import com.example.oj.dto.ProblemSmall;
 import com.example.oj.dto.TopicProblem;
-import com.example.oj.repository.ProblemRepository;
-import com.example.oj.repository.TopicProblemRepository;
-import com.example.oj.repository.TopicRepository;
+import com.example.oj.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.parsing.Problem;
 import org.springframework.data.domain.Page;
@@ -25,6 +24,8 @@ public class ProblemService {
     private final ProblemRepository problemRepository;
     private final TopicProblemRepository topicProblemRepository;
     private final TopicService topicService;
+    private final SubmissionRepository submissionRepository;
+    private final UserRepository userRepository;
     public ProblemDocument insert(ProblemDocument problemDocument) {
         return problemRepository.insert(problemDocument);
     }
@@ -45,13 +46,20 @@ public class ProblemService {
         return problemRepository.findById(id);
     }
 
-    public List<ProblemSmall> findByCreator(String email) {
+    public List<ProblemSmall> findByCreator(String email, int pageNumber) {
         List<ProblemSmall> problemSmallList = new ArrayList<>();
-        List<ProblemDocument> problems = problemRepository.findAllByEmail(email);
+        Pageable pageable = PageRequest.of(pageNumber, 10, Sort.by("createdAt").descending());
+        List<ProblemDocument> problems = problemRepository.findAllByEmail(email, pageable).getContent();
         for (ProblemDocument problem : problems) {
             problemSmallList.add(new ProblemSmall().convert(problem));
         }
         return problemSmallList;
+    }
+
+    public Map<String, Integer> countByEmail(String email) {
+        Map<String, Integer> mp = new HashMap<>();
+        mp.put("total", problemRepository.countByEmail(email));
+        return mp;
     }
 
     public void update(String id) {
@@ -71,6 +79,29 @@ public class ProblemService {
             topicProblemDocument.setTopicId(x.getId());
             topicProblemRepository.insert(topicProblemDocument);
         }
+    }
+
+    public Map<String, String> deleteProblem(String id, String email) {
+        Optional<ProblemDocument> problemDocument = problemRepository.findById(id);
+        UserDocument userDocument = userRepository.findOneByEmail(email);
+        boolean ok = false;
+        Map<String, String> mp = new HashMap<>();
+        if(problemDocument.isPresent() && userDocument != null) {
+            if(userDocument.getEmail().equals(problemDocument.get().getEmail())) {
+                ok = true;
+            }
+            else if(userDocument.getRole().getCode().equals("ADMIN")) {
+                ok = true;
+            }
+        }
+        if(ok) {
+            problemRepository.deleteById(id);
+            mp.put("result", "success");
+        }
+        else {
+            mp.put("result", "error");
+        }
+        return mp;
     }
 
     public List<ProblemSmall> findByKeyword(String keyword) {

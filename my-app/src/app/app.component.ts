@@ -6,11 +6,12 @@ import { UserService } from './api/user/user.service';
 import { WebsocketService } from './service/websocket/websocket.service';
 import { DataService } from './service/data/data.service';
 import { User } from './models/user.model';
-
+import { MatIconModule } from '@angular/material/icon';
+import { NzDrawerModule } from 'ng-zorro-antd/drawer';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, CommonModule],
+  imports: [RouterOutlet, CommonModule, MatIconModule, NzDrawerModule],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
@@ -23,6 +24,7 @@ export class AppComponent {
     title: '',
     content: ''
   }
+
 
   openForm: boolean = false
   constructor(

@@ -1,4 +1,4 @@
-<div class="main-problems pt-20 h-64">
+<div *ngIf="!error" class="main-problems pt-20 h-64">
     <h2>Thông tin cá nhân</h2>
     <hr class="custom-divider">
     <div class="flex mt-2">
@@ -6,9 +6,8 @@
             <img class="rounded-xl w-44 h-44" src="{{user!.avatar}}" alt="Hình ảnh">
             <br>
             <p>
-                <span class="font-bold text-base">Số bài đã giải: 120</span> <br>
+                <span *ngIf="figure" class="font-bold text-base">Số bài đã giải: {{figure.total}}</span> <br>
                 Hạng điểm: #200 <br>
-                Tổng điểm: 1000
             </p>
         </div>
         <div class="w-5/6 h-full ml-4 overflow-auto">
@@ -22,33 +21,27 @@
             <p>Khoa: {{user!.faculty}}</p>
             <hr class="custom-divider w-1/2">
             <div class="mt-4 flex space-x-16">
-                <a href="/profile/my-submission?result=AC">
+                <a *ngIf="figure">
                     <div
                         class="text-white bg-green-400 w-48 h-48 rounded-full flex flex-col justify-center items-center">
                         <p>Số bài AC</p>
-                        <p>100</p>
+                        <p>{{figure.totalAC}}</p>
                     </div>
                 </a>
-                <a>
-                    <div class="text-white bg-red-500 w-48 h-48 rounded-full flex flex-col justify-center items-center">
-                        <p>Số bài chưa AC</p>
-                        <p>20</p>
-                    </div>
-                </a>
-                <a>
+                <a href="/my-submission">
                     <div
                         class="text-white bg-gray-400 w-48 h-48 rounded-full flex flex-col justify-center items-center">
                         <p>Tổng số lần nộp bài</p>
-                        <p>500</p>
+                        <p>{{total}}</p>
                     </div>
                 </a>
             </div>
-            <div class="mt-4" *ngIf="result !== null && result !== undefined">
-                <hr class="custom-divider" class="mb-4">
-                <app-my-submission></app-my-submission>
-            </div>
         </div>
     </div>
+</div>
+<div class="pt-20" *ngIf="error">
+    <h1 class="text-black flex justify-center items-center">Không tìm thấy trang</h1>
+
 </div>
 <div class="flex items-center justify-center">
     <div *ngIf="showEditForm"

@@ -1,4 +1,4 @@
-<div *ngIf="check && !isTaskView" class="pt-20">
+<div *ngIf="check && !isTaskView" class="pt-20 pb-20">
     <div class="mt-4 mb-6 flex">
         <div class="w-2/3">
             <a class="ml-200 text-gray-500">{{contest.title}}</a>
@@ -15,6 +15,10 @@
     <div class="main-content mt-4 flex">
         <div class="w-2/3">
             <span class="text-base font-medium">Các bài thi</span>
+            <div class="mt-4">
+                <nz-pagination (nzPageIndexChange)="onPageIndexChange($event)" [nzPageIndex]="pageIndex"
+                    [nzPageSize]="pageSize" [nzTotal]="total"></nz-pagination>
+            </div>
             <ul *ngFor="let problem of problems">
                 <li class="mt-4 w-full border border-gray-300 px-6 py-4 rounded">
                     <div class="flex items-center">
@@ -23,8 +27,6 @@
                                     class="text-xl text-green-400">{{problem.title}}</span></a>
                         </div>
                         <div class="w-1/6 flex justify-end">
-                            <!-- <a class="mr-2"><mat-icon class="text-gray-400" style="vertical-align: middle;"
-                                    title="Bảng xếp hạng">leaderboard</mat-icon></a> -->
                             <a (click)="redirectSubmission(contest.id, '', problem.id)"><mat-icon class="text-gray-400"
                                     style="vertical-align: middle;" title="Các bài nộp">list</mat-icon></a>
                         </div>
@@ -43,9 +45,15 @@
                     </div>
                 </li>
             </ul>
+            <div class="mt-4">
+                <nz-pagination (nzPageIndexChange)="onPageIndexChange($event)" [nzPageIndex]="pageIndex"
+                    [nzPageSize]="pageSize" [nzTotal]="total"></nz-pagination>
+            </div>
         </div>
         <div class="w-1/3 ml-10">
-            <span class="text-base font-medium">Scored: 100</span>
+            <span *ngIf="topRating" class="text-base font-medium">Tổng điểm:
+                {{topRating['info']['totalScore']}}</span><br>
+            <span *ngIf="topRating" class="text-base font-medium">Solved: {{topRating['info']['totalSolutions']}}</span>
             <div class="mt-16">
                 <div class="flex items-center">
                     <a (click)="redirectLeaderBoard()" class="mr-2"><mat-icon class="text-gray-400"
@@ -69,6 +77,14 @@
     </div>
 </div>
 <app-detail-problem *ngIf="isTaskView"></app-detail-problem>
+<nz-modal [(nzVisible)]="isVisible" nzTitle="Thông báo" [nzCancelText]="textCancel" [nzOkText]="textOk"
+    (nzOnCancel)="handleCancel()" (nzOnOk)="handleOk()">
+    <ng-container *nzModalContent>
+        <p>Cuộc thi đã kết thúc!</p>
+        <p>Nếu bạn muốn tiếp tục làm bài thì các bài nộp sẽ không lưu vào lịch sử cuộc thi mà lưu vào lịch sử nộp bài
+            của bạn.</p>
+    </ng-container>
+</nz-modal>
 <div class="pt-20" *ngIf="check === false">
     <h1 class="text-black flex justify-center items-center">Không tìm thấy trang</h1>
 

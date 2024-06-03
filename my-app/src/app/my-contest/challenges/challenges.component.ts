@@ -8,22 +8,34 @@ import { CommonModule } from '@angular/common';
 import { DataService } from '../../service/data/data.service';
 import { DetailProblemComponent } from '../../detail-problem/detail-problem.component';
 import { User } from '../../models/user.model';
+import { NzPaginationModule } from 'ng-zorro-antd/pagination';
+import { NzModalModule, NzModalService } from 'ng-zorro-antd/modal';
 
 @Component({
   selector: 'app-challenges',
   standalone: true,
-  imports: [MatIconModule, CommonModule, DetailProblemComponent],
+  imports: [MatIconModule, CommonModule, DetailProblemComponent, NzPaginationModule, NzModalModule],
   templateUrl: './challenges.component.html',
   styleUrl: './challenges.component.scss'
 })
 export class ChallengesComponent {
   contest!: Contest
   problems: { id: string, title: string, email: string, point: number }[] = []
+  topRating: any
   isFinished = false
   countdown: string = ''
   check: boolean = true
   isTaskView = false
   user!: User
+  page: boolean = false
+  //pagination 
+  pageIndex = 1
+  pageSize = 10
+  total = 0
+  //modal
+  isVisible = false;
+  textOk = 'Ok'
+  textCancel = 'Đóng'
   private countdownSubscription!: Subscription
   constructor(
     private router: Router,
@@ -37,28 +49,9 @@ export class ChallengesComponent {
       this.router.navigate(['login'])
       return
     }
-    this.activatedRoute.params.subscribe(params => {
-      if (params['id']) {
-        this.contestService.getContest(params['id']).subscribe(
-          (data) => {
-            if (data) {
-              this.contest = data
-              this.handleTime()
-              this.dataService.user?.subscribe(
-                user => {
-                  this.user = user
-                  if (this.countdown === 'Chưa bắt đầu') {
-                    if (user.email !== this.contest.createdBy) {
-                      this.check = false
-                      return
-                    }
-                  }
-                }
-              )
-            }
-          }
-        )
-        this.contestService.getChallenges(params['id']).subscribe(
+    this.activatedRoute.queryParams.subscribe(params => {
+      if (params['page']) {
+        this.contestService.getChallenges(this.contest.id, params['page'] - 1).subscribe(
           (data) => {
             if (data) {
               this.problems = data
@@ -67,6 +60,54 @@ export class ChallengesComponent {
         )
       }
     })
+    if (!this.page) {
+      this.activatedRoute.params.subscribe(params => {
+        if (params['id']) {
+          this.contestService.getTopRating(params['id']).subscribe(
+            (data) => {
+              this.topRating = data
+            }
+          )
+          this.contestService.getContest(params['id']).subscribe(
+            (data) => {
+              if (data) {
+                this.contest = data
+                this.total = this.contest.problems.length
+                if (this.contest.finished) {
+                  this.countdown = "Hết thời gian"
+                  this.isVisible = true
+                }
+                else {
+                  this.handleTime()
+                }
+                this.dataService.user?.subscribe(
+                  user => {
+                    this.user = user
+                    if (this.countdown === 'Chưa bắt đầu') {
+                      if (user.email !== this.contest.createdBy) {
+                        this.check = false
+                        return
+                      }
+                    }
+                    else if (!(this.countdown === 'Hết thời gian')) {
+                      this.router.navigate(['landing', this.contest.id])
+                    }
+
+                  }
+                )
+              }
+            }
+          )
+          this.contestService.getChallenges(params['id'], this.pageIndex - 1).subscribe(
+            (data) => {
+              if (data) {
+                this.problems = data
+              }
+            }
+          )
+        }
+      })
+    }
 
     this.activatedRoute.params.subscribe(params => {
       if (params['problemId']) {
@@ -107,6 +148,14 @@ export class ChallengesComponent {
     else {
       this.isFinished = true
       this.countdown = "Hết thời gian"
+      this.isVisible = true
+      // update contest is finished
+      this.contest.finished = true
+      this.contestService.update(this.contest).subscribe(
+        () => {
+
+        }
+      )
       // this.countdownSubscription.unsubscribe()
       return false
     }
@@ -144,6 +193,12 @@ export class ChallengesComponent {
     }
   }
 
+  onPageIndexChange(event: number) {
+    this.pageIndex = event
+    this.page = true
+    this.router.navigate(['contests', this.contest.id, 'challenges'], { queryParams: { page: event } })
+  }
+
 
   ngOnDestroy() {
     if (this.countdownSubscription) {
@@ -156,5 +211,14 @@ export class ChallengesComponent {
       return true
     }
     return false
+  }
+
+  //modal
+  handleOk(): void {
+    this.isVisible = false;
+  }
+
+  handleCancel(): void {
+    this.isVisible = false;
   }
 }

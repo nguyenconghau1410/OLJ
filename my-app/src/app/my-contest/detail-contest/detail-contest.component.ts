@@ -12,19 +12,29 @@ import { ProblemService } from '../../api/problem/problem.service';
 import { UserService } from '../../api/user/user.service';
 import { User } from '../../models/user.model';
 import { WebsocketService } from '../../service/websocket/websocket.service';
+import { NzPaginationModule } from 'ng-zorro-antd/pagination';
+import { DataService } from '../../service/data/data.service';
+import { BaseChartDirective } from 'ng2-charts';
+import { ChartOptions } from 'chart.js';
 @Component({
   selector: 'app-detail-contest',
   standalone: true,
-  imports: [CommonModule, CKEditorModule, FormsModule, MatIconModule],
+  imports: [CommonModule, CKEditorModule, FormsModule, MatIconModule, NzPaginationModule, BaseChartDirective],
   templateUrl: './detail-contest.component.html',
   styleUrl: './detail-contest.component.scss'
 })
 export class DetailContestComponent {
   public Editor = Editor
+  error: boolean = false
   contest!: Contest
   isChecked: boolean = false
-  index = 0
   showAddProblemForm: boolean = false
+  // for tab
+  index = 0
+  // for pagination
+  page = 1
+  pageSize = 20
+  total = 0
   // index 1
   problemsSearch: { id: string, title: string, email: string, point: number }[] = []
   problems: { id: string, title: string, email: string, point: number }[] = []
@@ -51,7 +61,29 @@ export class DetailContestComponent {
   // index 2
   selected: string = ''
   content: string = ''
-
+  // index 5
+  statisticUser: any
+  public pieChartOptions: ChartOptions = {
+    responsive: true
+  }
+  labels: string[] = []
+  data: number[] = []
+  chartData = {
+    labels: this.labels,
+    datasets: [
+      {
+        data: this.data,
+        fill: true,
+        backgroundColor: [
+          'rgb(0, 255, 0)',
+          'rgb(85, 85, 85)',
+          'rgb(255, 205, 86)',
+          'rgb(200, 200, 200)',
+          'rgb(255, 0, 0)'
+        ]
+      }
+    ]
+  }
   constructor(
     private contestService: ContestService,
     private problemService: ProblemService,
@@ -59,7 +91,8 @@ export class DetailContestComponent {
     private userService: UserService,
     private router: Router,
     private route: ActivatedRoute,
-    private websocketService: WebsocketService
+    private websocketService: WebsocketService,
+    private dataService: DataService
   ) { }
 
   ngOnInit() {
@@ -69,6 +102,16 @@ export class DetailContestComponent {
           (data) => {
             if (data) {
               this.contest = data
+
+              this.dataService.user?.subscribe(
+                user => {
+                  if (user.email !== this.contest.createdBy) {
+                    this.error = true
+                    return
+                  }
+                }
+              )
+
               if (!this.contest.endTime && !this.contest.hourEnd) {
                 this.isChecked = true;
               }
@@ -121,14 +164,18 @@ export class DetailContestComponent {
         )
         return
       }
-      this.contestService.getSignups(this.contest.id).subscribe(
+      this.page = 1
+      this.total = this.contest.signups ? this.contest.signups.length : 0
+      this.contestService.getSignups(this.contest.id, this.page - 1).subscribe(
         (data) => {
           this.signups = data
         }
       )
     }
     else if (index === 1) {
-      this.contestService.getChallenges(this.contest.id).subscribe(
+      this.page = 1
+      this.total = this.contest.problems ? this.contest.problems.length : 0
+      this.contestService.getChallenges(this.contest.id, this.page - 1).subscribe(
         (data) => {
           if (data) {
             this.problems = data
@@ -143,10 +190,43 @@ export class DetailContestComponent {
       )
     }
     else if (index === 3) {
-      this.contestService.getParticipants(this.contest.id).subscribe(
+      this.page = 1
+      this.total = this.contest.participants.length
+      this.contestService.getParticipants(this.contest.id, this.page - 1).subscribe(
         (data) => {
           if (data) {
             this.users = data
+          }
+        },
+        (error) => {
+          this.toastrService.info(
+            `Đã có lỗi xảy ra: ${error.status}`, '',
+            { timeOut: 2000 }
+          )
+        }
+      )
+    }
+    else if (index === 5) {
+      this.contestService.getStatisticContest(this.contest.id).subscribe(
+        (data) => {
+          if (data) {
+            this.statisticUser = data
+          }
+        },
+        (error) => {
+          this.toastrService.info(
+            `Đã có lỗi xảy ra: ${error.status}`, '',
+            { timeOut: 2000 }
+          )
+        }
+      )
+      this.contestService.getStatisticListContest(this.contest.id).subscribe(
+        (data) => {
+          if (data) {
+            for (let i = 0; i < data.length; i++) {
+              this.labels.push(this.adjustingString(data[i]['id']))
+              this.data.push(data[i]['quantity'])
+            }
           }
         },
         (error) => {
@@ -205,6 +285,49 @@ export class DetailContestComponent {
             this.user = data
           }
         },
+      )
+    }
+  }
+
+  onPageIndexChange(event: number) {
+    if (this.index === 3) {
+      this.page = event
+      this.contestService.getParticipants(this.contest.id, event - 1).subscribe(
+        (data) => {
+          if (data) {
+            this.users = data
+          }
+        },
+        (error) => {
+          this.toastrService.info(
+            `Đã có lỗi xảy ra: ${error.status}`, '',
+            { timeOut: 2000 }
+          )
+        }
+      )
+    }
+    else if (this.index === 4) {
+      this.page = event
+      this.contestService.getSignups(this.contest.id, event - 1).subscribe(
+        (data) => {
+          this.signups = data
+        }
+      )
+    }
+    else if (this.index === 1) {
+      this.page = event
+      this.contestService.getChallenges(this.contest.id, this.page - 1).subscribe(
+        (data) => {
+          if (data) {
+            this.problems = data
+          }
+        },
+        (error) => {
+          this.toastrService.info(
+            `Đã có lỗi xảy ra: ${error.status}`, '',
+            { timeOut: 2000 }
+          )
+        }
       )
     }
   }
@@ -349,6 +472,43 @@ export class DetailContestComponent {
   // index 2
   sendNotification() {
     this.websocketService.sendMessage('/app/notify', { id: this.contest.id, content: this.content })
+    this.toastrService.success(
+      'Đã gửi thành công', '', { timeOut: 2000 }
+    )
+  }
+
+  // index 5
+  joined(): number {
+    let count = 0
+    for (let i = 0; i < this.contest.participants.length; i++) {
+      if (this.contest.participants[i].joined) {
+        ++count
+      }
+    }
+    return count
+  }
+
+  signedUp(): number {
+    return this.contest.signups ? this.contest.signups.length : 0
+  }
+
+  adjustingString(result: string) {
+    if (result === 'ACCEPTED') {
+      return "AC"
+    }
+    else if (result === 'WRONG ANSWER') {
+      return "WA"
+    }
+    else if (result === 'RUNTIME ERROR') {
+      return "RE"
+    }
+    else if (result === 'TIME LIMIT EXCEEDED') {
+      return "TLE"
+    }
+    else if (result == 'COMPILATION ERROR') {
+      return "CE"
+    }
+    return ""
   }
 
 }

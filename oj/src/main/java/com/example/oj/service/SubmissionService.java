@@ -5,6 +5,7 @@ import com.example.oj.constant.Utils;
 import com.example.oj.document.SubmissionDocument;
 import com.example.oj.document.UserDocument;
 import com.example.oj.dto.Statistic;
+import com.example.oj.dto.StatisticContest;
 import com.example.oj.dto.Submission;
 import com.example.oj.repository.SubmissionRepository;
 import com.example.oj.repository.UserRepository;
@@ -16,10 +17,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 
 @Service
@@ -87,5 +85,37 @@ public class SubmissionService {
 
     public List<Statistic> getStatistic() {
         return submissionRepository.getStatistic();
+    }
+
+    public Map<String, Integer> countMySubmission(String email) {
+        String userId = Constant.getId(email);
+        Map<String, Integer> mp = new HashMap<>();
+        mp.put("total", submissionRepository.countByUserId(userId));
+        return mp;
+    }
+
+    public List<SubmissionDocument> getSubmissionByUserId(String email, Integer pageNumber) {
+        String userId = Constant.getId(email);
+        Pageable pageable = PageRequest.of(pageNumber, 10, Sort.by("createdAt").descending());
+        Page<SubmissionDocument> submissionDocuments = submissionRepository.findByUserId(userId, pageable);
+        return submissionDocuments.getContent();
+    }
+
+    public Map<String, Long> getFigure(String email) {
+        String userId = Constant.getId(email);
+        StatisticContest solved = submissionRepository.getTotalSolved(userId);
+        StatisticContest ac = submissionRepository.getTotalAC(userId);
+        Map<String, Long> mp = new HashMap<>();
+        if(solved == null) {
+            solved = new StatisticContest();
+            solved.setTotal(0L);
+        }
+        if(ac == null) {
+            ac = new StatisticContest();
+            ac.setTotal(0L);
+        }
+        mp.put("total", solved.getTotal());
+        mp.put("totalAC", ac.getTotal());
+        return mp;
     }
 }
