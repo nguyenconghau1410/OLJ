@@ -4,9 +4,7 @@ import com.example.oj.constant.Constant;
 import com.example.oj.constant.Utils;
 import com.example.oj.document.SubmissionDocument;
 import com.example.oj.document.UserDocument;
-import com.example.oj.dto.Statistic;
-import com.example.oj.dto.StatisticContest;
-import com.example.oj.dto.Submission;
+import com.example.oj.dto.*;
 import com.example.oj.repository.SubmissionRepository;
 import com.example.oj.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +13,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.DeleteMapping;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -105,6 +104,7 @@ public class SubmissionService {
         String userId = Constant.getId(email);
         StatisticContest solved = submissionRepository.getTotalSolved(userId);
         StatisticContest ac = submissionRepository.getTotalAC(userId);
+        TopRating topRating = submissionRepository.getTopRatingUser(userId);
         Map<String, Long> mp = new HashMap<>();
         if(solved == null) {
             solved = new StatisticContest();
@@ -116,6 +116,60 @@ public class SubmissionService {
         }
         mp.put("total", solved.getTotal());
         mp.put("totalAC", ac.getTotal());
+        mp.put("top", (long) topRating.getIndex());
         return mp;
+    }
+
+    public List<Map<String, Object>> getTopUser(int pageNumber) {
+        List<LeaderBoard> list = submissionRepository.getLeaderboardUser(pageNumber * 25);
+        List<Map<String, Object>> data = new ArrayList<>();
+        for (LeaderBoard lead: list) {
+            Optional<UserDocument> userDocument = userRepository.findById(lead.getId());
+            if(userDocument.isPresent()) {
+                Map<String, Object> mp = new HashMap<>();
+                mp.put("userId", lead.getId());
+                mp.put("name", userDocument.get().getName());
+                mp.put("totalSolutions", lead.getTotalSolutions());
+                mp.put("faculty", userDocument.get().getFaculty());
+                mp.put("classname", userDocument.get().getClassname());
+                data.add(mp);
+            }
+        }
+        return data;
+    }
+
+    public Map<String, Long> countAllUser() {
+        Map<String, Long> mp = new HashMap<>();
+        mp.put("total", submissionRepository.countAllUser().getTotal());
+        return mp;
+    }
+
+    public List<SubmissionDocument> getACList(String userId, int pageNumber) {
+        List<DetailLeaderboard> list = submissionRepository.getACList(userId, pageNumber * 10);
+        List<SubmissionDocument> submissionDocuments = new ArrayList<>();
+        for (DetailLeaderboard detail: list) {
+            submissionDocuments.add(detail.getSubmission());
+        }
+        return submissionDocuments;
+    }
+
+    public StatisticContest countACList(String userId) {
+        return submissionRepository.countACList(userId);
+    }
+
+    public Map<String, String> deleteSubmissionsNotAC(String problemId, String email) {
+        Optional<UserDocument> userDocument = userRepository.findByEmail(email);
+        if(userDocument.isPresent()) {
+            Map<String, String > mp = new HashMap<>();
+            if(userDocument.get().getRole().getCode().equals("ADMIN")) {
+                submissionRepository.deleteByProblemIdAndResultNot(problemId, "ACCEPTED");
+                mp.put("result", "success");
+            }
+            else {
+                mp.put("result", "error");
+            }
+            return mp;
+        }
+        return null;
     }
 }

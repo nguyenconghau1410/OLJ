@@ -11,6 +11,7 @@ import com.example.oj.service.TopicService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -24,10 +25,16 @@ public class ProblemAPI {
     private final TopicService topicService;
     private final Utils utils;
     @PostMapping("/add")
-    public void insert
+    public ResponseEntity<Map<String, String>> insert
             (@RequestHeader("Authorization") String authorizationHeader,
              @RequestBody TopicProblem topicProblem
              ) {
+        Optional<ProblemDocument> check = problemService.findOne(topicProblem.getProblem().getId());
+        Map<String, String> mp = new HashMap<>();
+        if(check.isPresent()) {
+            mp.put("Error", "ProblemID đã tồn tại!");
+            return ResponseEntity.ok(mp);
+        }
         ProblemDocument problemDocument = topicProblem.getProblem();
         List<TopicDocument> topics = topicProblem.getTopics();
         String email = utils.getEmailFromToken(authorizationHeader);
@@ -43,10 +50,12 @@ public class ProblemAPI {
             topicProblemDocument.setTopicId(x.getId());
             topicService.insert(topicProblemDocument);
         }
+        mp.put("success", "ok");
+        return ResponseEntity.ok(mp);
     }
 
     @GetMapping("/get-all/{pageNumber}")
-    public ResponseEntity<List<ProblemDocument>> getAllProblem(@PathVariable Integer pageNumber) {
+    public ResponseEntity<List<ProblemSmall>> getAllProblem(@PathVariable Integer pageNumber) {
         return ResponseEntity.ok(problemService.findAll(pageNumber));
     }
 
@@ -102,5 +111,31 @@ public class ProblemAPI {
     @PostMapping("/search")
     public ResponseEntity<Map<String, Object>> search(@RequestBody Map<String, Object> data) {
         return ResponseEntity.ok(problemService.search(data));
+    }
+
+
+    // administration
+    @GetMapping("/admin/get-all/{pageNumber}")
+    public ResponseEntity<List<ProblemSmall>> getAll(@PathVariable Integer pageNumber) {
+        return ResponseEntity.ok(problemService.findAllManage(pageNumber));
+    }
+
+    @GetMapping("/admin/get-total-document")
+    public ResponseEntity<Map<String, Integer>> countAll() {
+        Map<String, Integer> mp = new HashMap<>();
+        mp.put("total", problemService.countAll());
+        return ResponseEntity.ok(mp);
+    }
+
+    @GetMapping("/admin/get-detail/{problemId}")
+    public ResponseEntity<Map<String, Object>> getDetail(@PathVariable String problemId) {
+        Map<String, Object> mp = problemService.getDetail(problemId);
+        return mp != null ? ResponseEntity.ok(mp) : ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    }
+
+    @GetMapping("/admin/search/{keyword}/{pageNumber}")
+    public ResponseEntity<Map<String, Object>> search(@PathVariable String keyword, @PathVariable int pageNumber) {
+        Map<String, Object> mp = problemService.search(keyword, pageNumber);
+        return mp != null ? ResponseEntity.ok(mp) : ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 }

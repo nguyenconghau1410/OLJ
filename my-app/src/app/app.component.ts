@@ -7,17 +7,19 @@ import { WebsocketService } from './service/websocket/websocket.service';
 import { DataService } from './service/data/data.service';
 import { User } from './models/user.model';
 import { MatIconModule } from '@angular/material/icon';
-import { NzDrawerModule } from 'ng-zorro-antd/drawer';
+import { NzModalModule } from 'ng-zorro-antd/modal';
+import { NzMenuModule } from 'ng-zorro-antd/menu';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, CommonModule, MatIconModule, NzDrawerModule],
+  imports: [RouterOutlet, CommonModule, MatIconModule, NzModalModule, NzMenuModule],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
 export class AppComponent {
 
   isLoggedIn = false
+  menuOpen: boolean = false;
   name!: String | null
   user!: User
   message: { title: string, content: string } = {
@@ -25,8 +27,12 @@ export class AppComponent {
     content: ''
   }
 
+  //modal
+  isVisible = false;
+  textOk = 'Ok';
+  textClose = 'Đóng'
 
-  openForm: boolean = false
+
   constructor(
     private tokenService: TokenService,
     private userService: UserService,
@@ -55,7 +61,7 @@ export class AppComponent {
                   const message = JSON.parse(messageText);
 
                   if (message) {
-                    this.openForm = true
+                    this.isVisible = true
                     this.message = message
                   }
                 })
@@ -67,9 +73,10 @@ export class AppComponent {
     )
   }
 
-  closeForm() {
-    this.openForm = false
+  toggleMenu() {
+    this.menuOpen = !this.menuOpen;
   }
+
 
   signOut(): void {
     this.tokenService.clearAccessToken()
@@ -77,4 +84,19 @@ export class AppComponent {
     this.router.navigate(["/login"])
   }
 
+  showModal(): void {
+    this.isVisible = true;
+  }
+
+  handleOk(): void {
+    this.isVisible = false;
+  }
+
+  handleCancel(): void {
+    this.isVisible = false;
+  }
+
+  click() {
+    this.router.navigate(['problems'])
+  }
 }

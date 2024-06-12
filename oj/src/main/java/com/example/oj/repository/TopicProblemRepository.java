@@ -15,4 +15,6 @@ public interface TopicProblemRepository extends MongoRepository<TopicProblemDocu
     Integer countByTopicId(String topicId);
 
     void deleteByProblemId(String problemId);
+
+    void deleteByTopicId(String topicId);
 }

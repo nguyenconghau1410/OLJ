@@ -1,31 +1,38 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { NzIconModule } from 'ng-zorro-antd/icon';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Route, Router } from '@angular/router';
 import { UserService } from '../api/user/user.service';
 import { User } from '../models/user.model';
 import { FormsModule, NgForm } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 import { CheckStatusService } from '../service/check/check-status.service';
 import { SubmissionService } from '../api/submission/submission.service';
+import { NzPaginationModule } from 'ng-zorro-antd/pagination';
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [NzIconModule, CommonModule, FormsModule],
+  imports: [NzIconModule, CommonModule, FormsModule, NzPaginationModule],
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.scss'
 })
 export class ProfileComponent {
   showEditForm = false
-  result: string | null = null
   user!: User | null;
   total!: number
   error: boolean = false
   figure: any
+
+  pageIndex = 1
+  totalPage = 0
+  pageSize = 10
+  acList: any
+  index = 0
   constructor(
     private userService: UserService,
     private submissionService: SubmissionService,
     private toastr: ToastrService,
+    private router: Router
   ) { }
 
   ngOnInit(): void {
@@ -83,4 +90,45 @@ export class ProfileComponent {
     )
   }
 
+  changeTab(i: number) {
+    if (i === 0) {
+      this.index = 0
+    }
+    else {
+      this.index = 1
+      this.submissionService.countACList(this.user!.id).subscribe(
+        (data) => {
+          this.total = data['total']
+        }
+      )
+      this.submissionService.getACList(this.user!.id, this.pageIndex - 1).subscribe(
+        (data) => {
+          this.acList = data
+        }
+      )
+    }
+  }
+
+  fixed(data: number) {
+    return data.toFixed(2)
+  }
+
+  onPageIndexChange(event: number) {
+    this.pageIndex = event
+    this.submissionService.getACList(this.user!.id, this.pageIndex - 1).subscribe(
+      (data) => {
+        this.acList = data
+      }
+    )
+  }
+
+  viewSubmission(id: string) {
+    this.router.navigate(['submissions', id])
+  }
+
+  topUser(top: number) {
+    if (top === -1)
+      return '###'
+    return top + 1
+  }
 }

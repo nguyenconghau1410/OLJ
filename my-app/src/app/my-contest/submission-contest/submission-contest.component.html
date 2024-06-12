@@ -5,7 +5,7 @@
         <nz-pagination (nzPageIndexChange)="onPageIndexChange($event)" [nzPageIndex]="pageIndex" [nzPageSize]="pageSize"
             [nzTotal]="total"></nz-pagination>
     </div>
-    <div class="mt-4 table-content  ml-0 mx-auto overflow-hidden">
+    <div class="mt-4 table-content  ml-0 mx-auto overflow-auto">
         <table class="w-full border-collapse border border-gray-300">
             <thead class="bg-gray-100 text-black">
                 <tr>
@@ -27,7 +27,7 @@
                     <td class="px-4 py-2">{{formatNumber(submission.time)}} s / {{formatNumber(submission.memory)}} MB
                     </td>
                     <td class="px-4 py-2">{{submission.result}}</td>
-                    <td class="px-4 py-2">{{submission.point}}</td>
+                    <td class="px-4 py-2">{{formatNumber(submission.point)}}</td>
                     <td *ngIf="check(submission.userId)" class="px-4 py-2"><a
                             (click)="viewSubmission(submission.id)">View</a></td>
                 </tr>

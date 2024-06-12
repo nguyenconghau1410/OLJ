@@ -1,11 +1,37 @@
-<div class="main-problems pt-20">
+<div class="main-problems pt-20 pb-20">
     <h2>Danh sách bài</h2>
     <hr class="custom-divider">
+    <div class="mt-4">
+        <div class="w-full hd h-60 rounded-lg border border-gray-300">
+            <div class="bg-gray-800 text-white">
+                <p class="px-4 py-2 text-base">Tìm kiếm bài tập</p>
+            </div>
+            <div>
+                <div class="ml-4 mr-4 mb-4">
+                    <input type="text" placeholder="Tìm bài..." [(ngModel)]="formSearch.search"
+                        class="border border-gray-300 px-3 py-1 w-full rounded-md transition duration-300 ease-in-out hover:border-blue-500">
+                    <div class="mt-4"></div>
+                    <span class="italic ">Dạng bài</span>
+                    <select id="mySelect" [(ngModel)]="formSearch.id"
+                        class="border border-gray-300 rounded-md px-3 py-1 w-full">
+                        <option value="">Chọn một tùy chọn</option>
+                        <option *ngFor="let topic of topics" [value]="topic.id">{{topic.name}}</option>
+                    </select>
+                    <div class="flex items-center justify-end mt-8">
+                        <button (click)="onReset()"
+                            class="bg-blue-500 text-white px-2 py-1 mt-2 rounded-md">Reset</button>
+                        <button (click)="onSubmit()"
+                            class="bg-blue-500 text-white px-2 py-1 mt-2 rounded-md ml-4">Tìm</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     <nz-pagination (nzPageIndexChange)="onPageIndexChange($event)" [nzPageIndex]="index" [nzPageSize]="12"
         [nzTotal]="total"></nz-pagination>
     <div class="main-content">
         <div class="flex flex-wrap">
-            <div class="table-content ml-0 mx-auto overflow-hidden rounded-lg">
+            <div class="table-content ml-0 mx-auto overflow-auto rounded-lg">
                 <table class="w-full border-collapse border border-gray-300">
                     <thead class="bg-gray-800 text-white">
                         <tr>
@@ -25,8 +51,13 @@
                                     [href]="'/problems/' + problem.id">{{problem.title}}</a>
                             </td>
                             <td class="border border-gray-300 px-4 py-2">{{problem.difficulty}}</td>
-                            <td class="border border-gray-300 px-4 py-2">#</td>
-                            <td class="border border-gray-300 px-4 py-2">#</td>
+                            <td *ngIf="problem.totalAC" class="border border-gray-300 px-4 py-2">
+                                {{calculate(problem.totalAC, problem.total)}}%
+                            </td>
+                            <td *ngIf="!problem.totalAC" class="border border-gray-300 px-4 py-2">###</td>
+                            <td *ngIf="problem.totalAC" class="border border-gray-300 px-4 py-2">{{problem.totalAC}}
+                            </td>
+                            <td *ngIf="!problem.totalAC" class="border border-gray-300 px-4 py-2">###</td>
                         </tr>
                     </tbody>
                 </table>

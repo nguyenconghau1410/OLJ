@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { API_URL, headers } from '../../constant';
+import { API_URL, API_URL_ADMIN, headers } from '../../constant';
 import { User } from '../../models/user.model';
 @Injectable({
   providedIn: 'root'
@@ -36,6 +36,49 @@ export class UserService {
   getUserById(id: string): Observable<any> {
     return this.http.get(
       `${API_URL.getUserById}/${id}`,
+      { headers: headers }
+    )
+  }
+
+  getInfoUser(id: string): Observable<any> {
+    return this.http.get(
+      `${API_URL.getUserInfo}/${id}`,
+      { headers: headers }
+    )
+  }
+  // administration
+  getAllUsers(pageNumber: number): Observable<any> {
+    return this.http.get(
+      `${API_URL_ADMIN.getAllUsers}/${pageNumber}`,
+      { headers: headers }
+    )
+  }
+
+  countAllUsers(): Observable<any> {
+    return this.http.get(
+      `${API_URL_ADMIN.countAllUsers}`,
+      { headers: headers }
+    )
+  }
+
+  deleteUser(id: string): Observable<any> {
+    return this.http.delete(
+      `${API_URL_ADMIN.deleteUser}/${id}`,
+      { headers: headers }
+    )
+  }
+
+  exchangeRole(data: any): Observable<any> {
+    return this.http.put(
+      API_URL_ADMIN.exchangeRole,
+      data,
+      { headers: headers }
+    )
+  }
+
+  search(keyword: string, pageNumber: number): Observable<any> {
+    return this.http.get(
+      `${API_URL_ADMIN.searchUser}/${keyword}/${pageNumber}`,
       { headers: headers }
     )
   }

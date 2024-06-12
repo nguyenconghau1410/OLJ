@@ -1,20 +1,15 @@
 package com.example.oj.constant;
 
 import com.example.oj.dto.Execute;
-import com.example.oj.dto.ResultTestCase;
 import com.example.oj.security.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import javax.tools.JavaCompiler;
-import javax.tools.ToolProvider;
 import java.io.*;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicLong;
 
 @RequiredArgsConstructor
 @Component
@@ -28,16 +23,6 @@ public class Utils {
         return null;
     }
 
-    public float calculateTime(String language, String time) {
-        float result = 0;
-        if(language == "java") {
-            result = Float.parseFloat(time) * 2;
-        }
-        else {
-            result = Float.parseFloat(time) * 4;
-        }
-        return result;
-    }
 
     public double calculateExecuteTime(long startTime, long endTime) {
         long executionTimeNano = endTime - startTime;
@@ -130,17 +115,19 @@ public class Utils {
         else if(language.equals("python")) {
             builder= new ProcessBuilder("python", "main.py");
             delayMillis = (long) (timeLimit * 1000) * 4;
-        } else {
-            builder = null;
-            delayMillis = 0;
+        }
+        else {
+            builder = new ProcessBuilder("./a.exe");
+            delayMillis = (long) (timeLimit * 1000);
         }
         File inputFile = new File(test.get("input"));
         builder.redirectInput(inputFile);
         ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
         Callable<Execute> task = () -> {
-            long startTime = System.nanoTime();
             Process process;
+            long startTime;
             try {
+                startTime = System.nanoTime();
                 process = builder.start();
             } catch (IOException e) {
                 throw new RuntimeException(e);

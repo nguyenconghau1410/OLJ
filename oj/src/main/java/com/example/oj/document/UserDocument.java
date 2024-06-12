@@ -16,5 +16,6 @@ public class UserDocument {
     private String avatar;
     private String faculty;
     private String classname;
+    private String loginAt;
     private RoleDocument role;
 }

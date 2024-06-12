@@ -252,4 +252,36 @@ public class ContestAPI {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         return ResponseEntity.ok(detailContestService.getTopRating(contestId, Constant.getId(email)));
     }
+
+
+    // administration
+    @GetMapping("/admin/get-contest-of-creator/{pageNumber}")
+    public ResponseEntity<List<Map<String, Object>>> getContestOfCreator(@PathVariable int pageNumber) {
+        return ResponseEntity.ok(contestService.getContestOfCreator(pageNumber));
+    }
+
+    @GetMapping("/admin/count-contest-of-creator")
+    public ResponseEntity<Map<String, Integer>> countContestOfCreator() {
+        return ResponseEntity.ok(contestService.countContestOfCreator());
+    }
+
+    @GetMapping("/admin/get-contests-creator/{email}/{pageNumber}")
+    public ResponseEntity<List<Map<String, Object>>> getContestsCreator(@PathVariable String email, @PathVariable int pageNumber) {
+        return ResponseEntity.ok(contestService.getContestsCreator(email, pageNumber));
+    }
+
+    @GetMapping("/admin/count-contests-creator/{email}")
+    public ResponseEntity<Map<String, Integer>> countByCreatedBy(@PathVariable String email) {
+        return ResponseEntity.ok(contestService.countByCreatedBy(email));
+    }
+
+    @DeleteMapping("/delete/{contestId}")
+    public ResponseEntity<Map<String, String>> deleteContest(@RequestHeader("Authorization") String authorizationHeader, @PathVariable String contestId) {
+        String email = utils.getEmailFromToken(authorizationHeader);
+        if(email != null) {
+            Map<String, String> mp = contestService.deleteContest(email, contestId);
+            return mp != null ? ResponseEntity.ok(mp) : ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    }
 }

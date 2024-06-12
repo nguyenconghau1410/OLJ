@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Contest } from '../../models/contest.model';
-import { API_URL, headers } from '../../constant';
+import { API_URL, API_URL_ADMIN, headers } from '../../constant';
 import { Submit } from '../../models/submit.model';
 
 @Injectable({
@@ -179,6 +179,42 @@ export class ContestService {
   getTopRating(contestId: string): Observable<any> {
     return this.http.get(
       `${API_URL.getTopRating}/${contestId}`,
+      { headers: headers }
+    )
+  }
+
+  // administration
+  countContestOfCreator(): Observable<any> {
+    return this.http.get(
+      API_URL_ADMIN.countContestOfCreator,
+      { headers: headers }
+    )
+  }
+
+  getContestOfCreator(pageNumber: number): Observable<any> {
+    return this.http.get(
+      `${API_URL_ADMIN.getContestOfCreator}/${pageNumber}`,
+      { headers: headers }
+    )
+  }
+
+  countContestsCreator(email: string): Observable<any> {
+    return this.http.get(
+      `${API_URL_ADMIN.countContestsCreator}/${email}`,
+      { headers: headers }
+    )
+  }
+
+  getContestsCreator(email: string, pageNumber: number): Observable<any> {
+    return this.http.get(
+      `${API_URL_ADMIN.getContestsCreator}/${email}/${pageNumber}`,
+      { headers: headers }
+    )
+  }
+
+  deleteContest(contestId: string): Observable<any> {
+    return this.http.delete(
+      `${API_URL_ADMIN.deleteContest}/${contestId}`,
       { headers: headers }
     )
   }

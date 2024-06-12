@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { API_URL } from '../../constant';
+import { API_URL, API_URL_ADMIN, headers } from '../../constant';
 
 @Injectable({
   providedIn: 'root'
@@ -24,6 +24,13 @@ export class FileService {
   }
 
   deleteFolder(nameFolder: string): Observable<any> {
-    return this.http.delete(`${API_URL.deleteFolder}/${nameFolder}`)
+    return this.http.delete(`${API_URL.deleteFolder}/${nameFolder}`, { headers: headers })
+  }
+
+  getFolder(): Observable<any> {
+    return this.http.get(
+      API_URL_ADMIN.getFolders,
+      { headers: headers }
+    )
   }
 }

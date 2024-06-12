@@ -7,6 +7,7 @@ export const API_URL = {
     getUserById: BASE_URL + "/users/get-by-id",
     updateUser: BASE_URL + "/users/update",
     getUserEmail: BASE_URL + "/users/get-by-email",
+    getUserInfo: BASE_URL + "/users/get-info-user",
     getAllTopic: BASE_URL + "/topic/find-all",
     getTopicOfProblem: BASE_URL + "/topic/get-topic-of-problem",
     addProblem: BASE_URL + "/problem/add",
@@ -24,6 +25,8 @@ export const API_URL = {
     deleteFolder: BASE_URL + "/file/delete-folder",
     submit: BASE_URL + "/submission/submit",
     getFigure: BASE_URL + "/submission/get-figure",
+    getACList: BASE_URL + "/submission/get-ac-list",
+    countACList: BASE_URL + "/submission/count-ac-list",
     getSubmission: BASE_URL + "/submission/result",
     countMySubmissions: BASE_URL + "/submission/count-my-submission",
     getMySubmisisons: BASE_URL + "/submission/get-my-submission",
@@ -33,6 +36,8 @@ export const API_URL = {
     getSubmissionOfProblem: BASE_URL + "/submission/get-submission-of-problem",
     getSubmissionByProblem: BASE_URL + "/submission/get-by-problemId",
     getStatistic: BASE_URL + "/submission/get-statistic",
+    getLeaderboardUser: BASE_URL + "/submission/get-leaderboard-user",
+    countAllUser: BASE_URL + "/submission/count-all-user",
     addContest: BASE_URL + "/contest/add",
     getContestByCreator: BASE_URL + "/contest/get-by-creator",
     getContest: BASE_URL + "/contest/get",
@@ -58,7 +63,26 @@ export const API_URL = {
     getHistoryContest: BASE_URL + "/contest/get-history-contest",
     getTopRating: BASE_URL + "/contest/get-top-rating"
 }
-
+export const API_URL_ADMIN = {
+    getAllProblem: BASE_URL + '/problem/admin/get-all',
+    countAllProblem: BASE_URL + '/problem/admin/get-total-document',
+    getAllUsers: BASE_URL + "/users/admin/get-all",
+    countAllUsers: BASE_URL + "/users/admin/count-all",
+    deleteUser: BASE_URL + "/users/admin/delete",
+    countContestOfCreator: BASE_URL + "/contest/admin/count-contest-of-creator",
+    getContestOfCreator: BASE_URL + "/contest/admin/get-contest-of-creator",
+    countContestsCreator: BASE_URL + "/contest/admin/count-contests-creator",
+    getContestsCreator: BASE_URL + "/contest/admin/get-contests-creator",
+    deleteContest: BASE_URL + "/contest/delete",
+    getDetailProblem: BASE_URL + "/problem/admin/get-detail",
+    deleteSubmissionsNotAC: BASE_URL + "/submission/admin/delete",
+    addTopic: BASE_URL + "/topic/add",
+    deleteTopic: BASE_URL + "/topic/delete",
+    exchangeRole: BASE_URL + "/users/admin/exchange-role",
+    searchUser: BASE_URL + "/users/admin/search",
+    searchProblem: BASE_URL + "/problem/admin/search",
+    getFolders: BASE_URL + "/file/get-folders"
+}
 export const headers = new HttpHeaders()
     .set('Content-Type', 'application/json')
     .set('Authorization', `Bearer ${sessionStorage.getItem('access_token')}`)

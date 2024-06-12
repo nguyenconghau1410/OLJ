@@ -9,7 +9,6 @@ import com.example.oj.dto.ProblemSmall;
 import com.example.oj.dto.TopicProblem;
 import com.example.oj.repository.*;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.parsing.Problem;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -34,11 +33,20 @@ public class ProblemService {
         return problemRepository.countByState("PUBLIC");
     }
 
-    public List<ProblemDocument> findAll(int pageNumber) {
+    public List<ProblemSmall> findAll(int pageNumber) {
         Pageable pageable = PageRequest.of(pageNumber, 12);
         Page<ProblemDocument> pages = problemRepository.findAllByState("PUBLIC", pageable);
-        List<ProblemDocument> list = new ArrayList<>();
-        list.addAll(pages.getContent());
+        List<ProblemSmall> list = new ArrayList<>();
+        for (ProblemDocument problemDocument: pages.getContent()) {
+            ProblemSmall problemSmall = new ProblemSmall().convert(problemDocument);
+            ProblemSmall statistic = submissionRepository.getStatisticProblem(problemSmall.getId());
+            problemSmall.setDifficulty(problemDocument.getDifficulty());
+            if(statistic != null) {
+                problemSmall.setTotal(statistic.getTotal());
+                problemSmall.setTotalAC(statistic.getTotalAC());
+            }
+            list.add(problemSmall);
+        }
         return list;
     }
 
@@ -96,6 +104,7 @@ public class ProblemService {
         }
         if(ok) {
             problemRepository.deleteById(id);
+            submissionRepository.deleteByProblemId(id);
             mp.put("result", "success");
         }
         else {
@@ -123,12 +132,87 @@ public class ProblemService {
             Page<ProblemDocument> problemDocuments = problemRepository.findByTitleContaining((String) data.get("search"), pageable);
             List<ProblemSmall> problems = new ArrayList<>();
             for (ProblemDocument problemDocument: problemDocuments.getContent()) {
-                problems.add(new ProblemSmall().convert(problemDocument));
+                ProblemSmall problemSmall = new ProblemSmall().convert(problemDocument);
+                ProblemSmall statistic = submissionRepository.getStatisticProblem(problemDocument.getId());
+                problemSmall.setDifficulty(problemDocument.getDifficulty());
+                if(statistic != null) {
+                    problemSmall.setTotal(statistic.getTotal());
+                    problemSmall.setTotalAC(statistic.getTotalAC());
+                }
+                problems.add(problemSmall);
             }
             Map<String, Object> mp = new HashMap<>();
             mp.put("list", problems);
             mp.put("total", total);
             return mp;
         }
+    }
+
+    //administration
+    public List<ProblemSmall> findAllManage(int pageNumber) {
+        Pageable pageable = PageRequest.of(pageNumber, 12, Sort.by("testcase"));
+        Page<ProblemDocument> problemDocuments = problemRepository.findAll(pageable);
+        List<ProblemSmall> problems = new ArrayList<>();
+        for (ProblemDocument problemDocument: problemDocuments.getContent()) {
+            problems.add(new ProblemSmall().convert(problemDocument));
+        }
+        return problems;
+    }
+    public Integer countAll() {
+        return Math.toIntExact(problemRepository.count());
+    }
+
+    public Map<String, Object> getDetail(String problemId) {
+        Optional<ProblemDocument> problemDocument = problemRepository.findById(problemId);
+        ProblemSmall statistic = submissionRepository.getStatisticProblem(problemId);
+        List<TopicDocument> topics = topicService.findByProblemId(problemId);
+        if(problemDocument.isPresent()) {
+            Map<String, Object> mp = new HashMap<>();
+            mp.put("problem", problemDocument.get());
+            mp.put("statistic", statistic);
+            mp.put("topics", topics != null ? topics : new ArrayList<>());
+            return mp;
+        }
+        return null;
+    }
+
+    public Map<String, Object> search(String keyword, int pageNumber) {
+        Pageable pageable = PageRequest.of(pageNumber, 12);
+        Page<ProblemDocument> page = problemRepository.findByTitleContaining(keyword, pageable);
+        Integer total = problemRepository.countByTitleContaining(keyword);
+        if(page != null && total != null) {
+            Map<String, Object> mp = new HashMap<>();
+            List<ProblemSmall> problemSmallList = new ArrayList<>();
+            for (ProblemDocument problemDocument: page.getContent()) {
+                problemSmallList.add(new ProblemSmall().convert(problemDocument));
+            }
+            mp.put("list", problemSmallList);
+            mp.put("total", total);
+            return mp;
+        }
+        return null;
+    }
+
+    public List<Map<String, Object>> handleTestcase(List<Map<String, Object>> testcases) {
+        List<ProblemDocument> problemDocuments = problemRepository.findAll();
+        List<String> nameFolder = new ArrayList<>();
+        for (ProblemDocument problemDocument : problemDocuments) {
+            String path = problemDocument.getTestcase().get(0).get("input");
+            String[] segments = path.split("\\\\");
+            nameFolder.add(segments[2]);
+        }
+        List<Map<String, Object>> data = new ArrayList<>();
+        for (Map<String, Object> testcase: testcases) {
+            boolean ok = false;
+            for (String name: nameFolder) {
+                if(testcase.get("name").equals(name)) {
+                    ok = true;
+                }
+            }
+            if(!ok) {
+                data.add(testcase);
+            }
+        }
+        return data;
     }
 }

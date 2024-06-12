@@ -5,6 +5,7 @@ import com.example.oj.document.SubmissionDocument;
 import com.example.oj.dto.Statistic;
 import com.example.oj.dto.StatisticContest;
 import com.example.oj.dto.Submission;
+import com.example.oj.dto.TopRating;
 import com.example.oj.service.SubmissionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -12,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.*;
 import java.util.*;
 
 @RestController
@@ -92,5 +94,92 @@ public class SubmissionAPI {
     public ResponseEntity<Map<String, Long>> getFigure(@RequestHeader("Authorization") String authorizationHeader) {
         String email = utils.getEmailFromToken(authorizationHeader);
         return ResponseEntity.ok(submissionService.getFigure(email));
+    }
+
+    @GetMapping("/get-leaderboard-user/{pageNumber}")
+    public ResponseEntity<List<Map<String, Object>>> getLeaderboardUser(@PathVariable Integer pageNumber) {
+        return ResponseEntity.ok(submissionService.getTopUser(pageNumber));
+    }
+    @GetMapping("/count-all-user")
+    public ResponseEntity<Map<String, Long>> countMySubmission() {
+        return ResponseEntity.ok(submissionService.countAllUser());
+    }
+
+    @GetMapping("/get-ac-list/{userId}/{pageNumber}")
+    public ResponseEntity<List<SubmissionDocument>> getACList(@PathVariable String userId, @PathVariable Integer pageNumber) {
+        return ResponseEntity.ok(submissionService.getACList(userId, pageNumber));
+    }
+
+    @GetMapping("/count-ac-list/{userId}")
+    public ResponseEntity<StatisticContest> countACList(@PathVariable String userId) {
+        return ResponseEntity.ok(submissionService.countACList(userId));
+    }
+
+    @PostMapping("/test")
+    public void test() throws IOException, InterruptedException {
+        String src = "#include <stdio.h>\n" +
+                "\n" +
+                "#define MAXN 1000001\n" +
+                "\n" +
+                "int cnt[MAXN];\n" +
+                "\n" +
+                "int main() {\n" +
+                "    int n;\n" +
+                "    scanf(\"%d\", &n);\n" +
+                "    int a[n - 1];\n" +
+                "    \n" +
+                "    for(int i = 0; i < n - 1; i++) {\n" +
+                "        scanf(\"%d\", &a[i]);\n" +
+                "    }\n" +
+                "    \n" +
+                "    for(int i = 0; i < n - 1; i++) {\n" +
+                "        cnt[a[i]] = 1;\n" +
+                "    }\n" +
+                "    \n" +
+                "    for(int i = 1; i <= n; i++) {\n" +
+                "        if(cnt[i] == 0) {\n" +
+                "            printf(\"%d \", i);\n" +
+                "        }\n" +
+                "    }\n" +
+                "    \n" +
+                "    return 0;\n" +
+                "}";
+        File file = new File("main.c");
+        FileWriter writer = new FileWriter(file);
+        writer.write(src);
+        writer.close();
+
+        ProcessBuilder processBuilder = new ProcessBuilder("gcc", "main.c", "-o", "a.exe");
+        Process process = processBuilder.start();
+        process.waitFor();
+
+        if(process.exitValue() != 0) {
+            System.out.println("COMPILATION ERROR");
+            System.exit(0);
+        }
+        for (int i = 1; i <= 14; i++) {
+            ProcessBuilder runBuilder = new ProcessBuilder("./a.exe");
+            File inputFile = new File(".\\testcase\\cses-missing-number-Missing Number\\input\\" + i + ".in");
+            runBuilder.redirectInput(inputFile);
+            Process main = runBuilder.start();
+            BufferedReader inputReader = new BufferedReader(new InputStreamReader(main.getInputStream()));
+            StringBuilder output = new StringBuilder();
+            String line;
+            while ((line = inputReader.readLine()) != null) {
+                output.append(line).append("\n");
+            }
+            System.out.println(output.toString());
+        }
+
+        file.delete();
+    }
+
+    // administration
+
+    @DeleteMapping("/admin/delete/{problemId}")
+    public ResponseEntity<Map<String, String>> deleteSubmissions(@RequestHeader("Authorization") String authorizationHeader, @PathVariable String problemId) {
+        String email = utils.getEmailFromToken(authorizationHeader);
+        Map<String, String> mp = submissionService.deleteSubmissionsNotAC(problemId, email);
+        return mp != null ? ResponseEntity.ok(mp) : ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 }

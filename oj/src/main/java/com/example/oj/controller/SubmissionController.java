@@ -29,7 +29,7 @@ public class SubmissionController {
     private final ProblemService problemService;
     private final Utils utils;
     @MessageMapping("/execute")
-    public void executeCode(@Payload String id) throws IOException, ExecutionException, InterruptedException {
+    public void executeCode(@Payload String id) throws IOException {
         Optional<SubmissionDocument> submissionDocumentOptional = submissionService.findOne(id);
         SubmissionDocument submissionDocument;
         ProblemDocument problemDocument;
@@ -223,6 +223,122 @@ public class SubmissionController {
 
     }
 
+    @MessageMapping("/execute-mingw")
+    public void executeCpp(@Payload String id) throws IOException, InterruptedException {
+        Optional<SubmissionDocument> submissionDocumentOptional = submissionService.findOne(id);
+        SubmissionDocument submissionDocument;
+        ProblemDocument problemDocument;
+        if(submissionDocumentOptional.isPresent()) {
+            submissionDocument = submissionDocumentOptional.get();
+            problemDocument = problemService.findOne(submissionDocument.getProblemId()).get();
+        }
+        else {
+            return;
+        }
+        double maxTime = 0;
+        double maxMemory = 0;
+        int rightTest = 0;
+        String nameFile = "main";
+        String compiler;
+        File file;
+        if(submissionDocument.getLanguage().equals("cpp")) {
+            nameFile += ".cpp";
+            file = new File(nameFile);
+            compiler = "g++";
+        }
+        else {
+            nameFile += ".c";
+            file = new File(nameFile);
+            compiler = "gcc";
+        }
+        FileWriter fileWriter = new FileWriter(file);
+        fileWriter.write(submissionDocument.getSource());
+        fileWriter.close();
+
+        ProcessBuilder processBuilder = new ProcessBuilder(compiler, nameFile, "-o", "a.exe");
+        Process process = processBuilder.start();
+        process.waitFor();
+
+        if(process.exitValue() != 0) {
+            submissionDocument.setResult("COMPILATION ERROR");
+            submissionService.update(submissionDocument);
+            Map<String, String> map = new HashMap<>();
+            map.put("result", "COMPILATION ERROR");
+            messagingTemplate.convertAndSendToUser(
+                    submissionDocument.getUserId(), "/queue/messages",
+                    map
+            );
+            return;
+        }
+
+        Runtime runtime = Runtime.getRuntime();
+        List<String> outputs = new ArrayList<>();
+        for (int i = 0; i < problemDocument.getTestcase().size(); i++) {
+            Map<String, String> test = problemDocument.getTestcase().get(i);
+
+            Execute execute = utils.executeJudgeCode(test, Double.parseDouble(problemDocument.getTimeLimit()),runtime, "mingw");
+            ResultTestCase resultTestCase = new ResultTestCase();
+            if(execute.getOutput() != null) {
+                if(execute.getResult() == null) {
+                    File outputFile = new File(test.get("output"));
+                    String outputTest = utils.handleTestResult(outputFile);
+
+                    String temp = utils.checkResult(outputTest, execute.getOutput());
+
+                    resultTestCase.setResult(temp);
+                    resultTestCase.setTime(execute.getTime());
+                    resultTestCase.setMemory(execute.getMemory());
+
+                    outputs.add(temp);
+                }
+                else {
+                    resultTestCase.setResult(execute.getResult());
+                    resultTestCase.setTime(execute.getTime());
+                    resultTestCase.setMemory(execute.getMemory());
+                    outputs.add(execute.getResult());
+                }
+                maxTime = Math.max(maxTime, execute.getTime());
+                maxMemory = Math.max(maxMemory, execute.getMemory());
+            }
+            else {
+                resultTestCase.setResult(execute.getResult());
+                outputs.add(execute.getResult());
+                submissionDocument.setCompilerReport(execute.getCompilerReport());
+            }
+
+            submissionDocument.getTestcases().add(resultTestCase);
+            messagingTemplate.convertAndSendToUser(
+                    submissionDocument.getUserId(), "/queue/messages",
+                    resultTestCase
+            );
+        }
+        Map<String, String> map = new HashMap<>();
+        String res = utils.checkFinalResult(outputs);
+        if(res.equals("")) {
+            submissionDocument.setResult("ACCEPTED");
+            map.put("result", "ACCEPTED");
+        }
+        else {
+            submissionDocument.setResult(res);
+            map.put("result", res);
+        }
+
+        submissionDocument.setTime((float) maxTime);
+        submissionDocument.setMemory((float) maxMemory);
+        for(String output: outputs) {
+            if(output.equals("ACCEPTED"))
+                ++rightTest;
+        }
+        submissionDocument.setRightTest(rightTest);
+
+        submissionService.update(submissionDocument);
+
+        messagingTemplate.convertAndSendToUser(
+                submissionDocument.getUserId(), "/queue/messages",
+                map
+        );
+        file.delete();
+    }
     @MessageMapping("/submission")
     public void response(@Payload String id) {
         messagingTemplate.convertAndSendToUser(

@@ -72,6 +72,20 @@ export class ResultContestComponent {
                   mode: 'text/x-python',
                 }
               }
+              else if (this.detailContest.language === 'cpp') {
+                this.options = {
+                  lineNumbers: true,
+                  theme: 'default',
+                  mode: 'text/x-c++src',
+                }
+              }
+              else {
+                this.options = {
+                  lineNumbers: true,
+                  theme: 'default',
+                  mode: 'text/x-csrc',
+                }
+              }
 
               if (this.user.role!.code === 'STUDENT' && this.user.id !== this.detailContest.userId) {
                 this.error = true
@@ -85,6 +99,9 @@ export class ResultContestComponent {
                 }
                 else if (this.detailContest.language === 'python') {
                   this.websocketService.sendMessage('/app/contest/execute-python', id)
+                }
+                else {
+                  this.websocketService.sendMessage('/app/contest/execute-mingw', id)
                 }
 
                 // listen websocket
@@ -141,8 +158,10 @@ export class ResultContestComponent {
       return "Java"
     else if (language === 'python')
       return "Python"
-    else
+    else if (language === 'cpp')
       return "C++"
+    else
+      return "C"
   }
 
   redirect(id: string) {

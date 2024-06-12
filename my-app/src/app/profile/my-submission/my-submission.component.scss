@@ -1,3 +1,18 @@
+@media (max-width: 1024px) {
+    .main-problems {
+        margin-left: 20px;
+        margin-right: 20px;
+    }
+}
+
+@media (min-width: 1024px) {
+    .main-problems {
+        margin-left: 120px;
+        margin-right: 120px;
+    }
+}
+
+
 h2 {
     font-size: 30px;
     padding-top: 16px;
@@ -7,10 +22,6 @@ h2 {
     border-top: 1px solid rgba(0, 0, 0, .2);
 }
 
-.main-problems {
-    margin-left: 120px;
-    margin-right: 120px;
-}
 
 .main-content {
     margin-top: 20px;

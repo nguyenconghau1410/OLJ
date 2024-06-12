@@ -33,7 +33,7 @@ export class AdministrationComponent {
     private problemService: ProblemService,
     private toastrService: ToastrService,
     private dataService: DataService,
-    private activatedRoute: ActivatedRoute
+    private activatedRoute: ActivatedRoute,
   ) { }
 
   ngOnInit() {
@@ -113,12 +113,16 @@ export class AdministrationComponent {
     )
   }
 
+  redirect(id: string) {
+    this.router.navigate(['problems', id]);
+  }
 
   handleCancel(): void {
     this.isVisible = false;
   }
 
   handleOk() {
+    this.problems.splice(this.index, 1)
     this.problemService.delete(this.id).subscribe(
       (data) => {
         if (data) {

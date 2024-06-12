@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -54,5 +56,46 @@ public class UserAPI {
             return ResponseEntity.ok(userDocumentOptional.get());
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    }
+
+    @GetMapping("/get-info-user/{id}")
+    public ResponseEntity<Map<String, Object>> getInfoUser(@PathVariable String id) {
+        Map<String, Object> mp = userService.getInfoUser(id);
+        if(mp == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        return ResponseEntity.ok(mp);
+    }
+
+    // administration
+    @GetMapping("/admin/get-all/{pageNumber}")
+    public ResponseEntity<List<UserDocument>> getUsers(@PathVariable int pageNumber) {
+        return ResponseEntity.ok(userService.getUsers(pageNumber));
+    }
+
+    @GetMapping("/admin/count-all")
+    public ResponseEntity<Map<String, Long>> countUsers() {
+        Map<String, Long> mp = new HashMap<>();
+        mp.put("total", userService.countUsers());
+        return ResponseEntity.ok(mp);
+    }
+
+    @DeleteMapping("/admin/delete/{id}")
+    public ResponseEntity<Map<String, String>> deleteUser(@RequestHeader("Authorization") String authorizationHeader, @PathVariable String id) {
+        String email = utils.getEmailFromToken(authorizationHeader);
+        return ResponseEntity.ok(userService.deleteUser(email, id));
+    }
+
+    @PutMapping("/admin/exchange-role")
+    public ResponseEntity<Map<String, String>> exchangeRole(@RequestHeader("Authorization") String authorizationHeader, @RequestBody Map<String, String> data) {
+        String email = utils.getEmailFromToken(authorizationHeader);
+        Map<String, String> mp = userService.exchangeRole(email, data);
+        return mp != null ? ResponseEntity.ok(mp) : ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+    }
+
+    @GetMapping("/admin/search/{keyword}/{pageNumber}")
+    public ResponseEntity<Map<String, Object>> search(@PathVariable String keyword, @PathVariable int pageNumber) {
+        Map<String, Object> data = userService.findByNameContaining(keyword, pageNumber);
+        return data != null ? ResponseEntity.ok(data) : ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 }

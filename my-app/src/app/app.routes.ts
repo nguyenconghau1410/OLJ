@@ -23,6 +23,15 @@ import { DetailRatingComponent } from './my-contest/detail-rating/detail-rating.
 import { ContestComponent } from './contest/contest.component';
 import { MySubmissionComponent } from './profile/my-submission/my-submission.component';
 import { HistoryContestComponent } from './profile/history-contest/history-contest.component';
+import { OthersComponent } from './others/others.component';
+import { AdminComponent } from './admin/admin.component';
+import { ProblemManageComponent } from './admin/problem-manage/problem-manage.component';
+import { UserManageComponent } from './admin/user-manage/user-manage.component';
+import { ContestManageComponent } from './admin/contest-manage/contest-manage.component';
+import { DetailContestCreatorComponent } from './admin/detail-contest-creator/detail-contest-creator.component';
+import { DetailProblemManageComponent } from './admin/detail-problem-manage/detail-problem-manage.component';
+import { CategoriesManageComponent } from './admin/categories-manage/categories-manage.component';
+import { TestcaseManageComponent } from './admin/testcase-manage/testcase-manage.component';
 
 export const routes: Routes = [
     { path: 'login', component: LoginComponent },
@@ -36,6 +45,7 @@ export const routes: Routes = [
     { path: 'problems/:problemId/all-submissions', component: MySubmissionProblemComponent },
     { path: 'users', component: UsersComponent },
     { path: 'profile', component: ProfileComponent },
+    { path: 'users/:id', component: OthersComponent },
     { path: 'history-contest', component: HistoryContestComponent },
     { path: 'my-submission', component: MySubmissionComponent },
     { path: 'administration/create-problem', component: CreateProblemComponent },
@@ -53,5 +63,19 @@ export const routes: Routes = [
     { path: 'contests/:id/:problemId', component: SubmissionContestComponent },
     { path: 'contests/:id/leaderboard/all', component: LeaderBoardComponent },
     { path: 'contests/:id/leaderboard/:userId', component: DetailRatingComponent },
-    { path: 'contests', component: ContestComponent }
+    { path: 'contests', component: ContestComponent },
+    {
+        path: 'admin',
+        component: AdminComponent,
+        children: [
+            { path: 'problems', component: ProblemManageComponent },
+            { path: 'members', component: UserManageComponent },
+            { path: 'contests', component: ContestManageComponent },
+            { path: 'contests/:userId', component: DetailContestCreatorComponent },
+            { path: 'problems/:problemId', component: DetailProblemManageComponent },
+            { path: 'categories', component: CategoriesManageComponent },
+            { path: 'testcases', component: TestcaseManageComponent },
+            { path: '', redirectTo: 'categories', pathMatch: 'full' }
+        ]
+    },
 ];

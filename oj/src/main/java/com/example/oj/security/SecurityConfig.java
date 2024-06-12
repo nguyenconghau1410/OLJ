@@ -26,10 +26,11 @@ public class SecurityConfig {
                 .authorizeHttpRequests(
                         auth -> auth
                                 .requestMatchers("/api/v1/auth/**").permitAll()
+                                .requestMatchers("/api/v1/topic/find-all").permitAll()
                                 .requestMatchers("/ws/**").permitAll()
-                                .requestMatchers("/api/v1/file/**").permitAll()
-                                .requestMatchers("/api/v1/submission/get-all").permitAll()
-                                .requestMatchers("/api/v1/problem/get-all/**", "/api/v1/problem/get-total-document", "/api/v1/problem/get/**").permitAll()
+                                .requestMatchers("/api/v1/file/upload-file").permitAll()
+                                .requestMatchers("/api/v1/submission/get-all", "/api/v1/submission/count-all-user", "/api/v1/submission/get-leaderboard-user/**").permitAll()
+                                .requestMatchers("/api/v1/problem/get-all/**", "/api/v1/problem/get-total-document", "/api/v1/problem/get/**", "/api/v1/problem/get-total-document").permitAll()
                                 .requestMatchers("/api/v1/contest/get-contest-list/**", "/api/v1/contest/count-contest/**" ).permitAll()
                                 .anyRequest().authenticated()
                 )

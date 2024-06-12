@@ -130,6 +130,10 @@ export class CreateProblemComponent {
     }
     this.problemService.addProblem(this.problem, this.selectedType).subscribe(
       (data) => {
+        if (data['Error']) {
+          this.toastrService.error('ProblemID đã tồn tại', '', { timeOut: 2000 })
+          return
+        }
         this.create = true
         this.toastrService.success(
           'Created',
@@ -187,9 +191,8 @@ export class CreateProblemComponent {
 
   uploadFile() {
     if (this.checkUploadFile()) {
-      const folder = this.problem.id + "-" + this.problem.title
+      const folder = this.problem.id
       this.nameFolder = folder
-      console.log(this.nameFolder)
       if (this.inputFiles.length !== 0 && this.outputFiles.length !== 0) {
         this.fileService.uploadFile(this.inputFiles, folder, 'input').subscribe(
           (data) => {
@@ -204,10 +207,16 @@ export class CreateProblemComponent {
             }
           },
           (error) => {
-            if (error.status !== 401) {
+            if (error.status === 403) {
               this.toastrService.error(
-                `Error: ${error.status}`, '',
-                { timeOut: 1000 }
+                `ProblemID đã tồn tại, hãy đặt tên khác !`, '',
+                { timeOut: 2000 }
+              )
+            }
+            else {
+              this.toastrService.error(
+                `Đã có lỗi xảy ra, hãy thử lại !`, '',
+                { timeOut: 2000 }
               )
             }
           }
@@ -220,14 +229,20 @@ export class CreateProblemComponent {
               }
               this.toastrService.success(
                 'Upload success', '',
-                { timeOut: 1000 }
+                { timeOut: 2000 }
               )
             }
           },
           (error) => {
-            if (error.status !== 401) {
+            if (error.status === 403) {
               this.toastrService.error(
-                `Error: ${error.status}`, '',
+                `ProblemID đã tồn tại, hãy đặt tên khác !`, '',
+                { timeOut: 2000 }
+              )
+            }
+            else {
+              this.toastrService.error(
+                `Đã có lỗi xảy ra, hãy thử lại !`, '',
                 { timeOut: 1000 }
               )
             }
@@ -248,6 +263,13 @@ export class CreateProblemComponent {
     if (this.inputFiles.length !== this.outputFiles.length) {
       this.toastrService.info(
         'The size inputList and outputList is not equal!', '',
+        { timeOut: 2000 }
+      )
+      return false
+    }
+    else if (this.problem.id === '') {
+      this.toastrService.info(
+        'Enter the ProblemID !', '',
         { timeOut: 2000 }
       )
       return false

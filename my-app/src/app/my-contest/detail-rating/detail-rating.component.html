@@ -2,25 +2,30 @@
     <h2>Chi tiết xếp hạng</h2>
     <hr class="custom-divider">
     <div class="flex mt-4 mb-4">
-        <div class="w-1/6">
+        <div class="lg:w-1/6">
             <img class="rounded-xl w-44 h-44" src="{{user!.avatar}}" alt="Hình ảnh">
             <br>
         </div>
-        <div class="w-2/6 h-full ml-4 overflow-auto">
+        <div class="lg:w-2/6 h-full ml-4 overflow-auto">
             <h3 class="text-2xl font-thin">{{user!.name}}</h3>
             <p>ID: {{user!.id}}</p>
             <p>Email: {{user!.email}} </p>
             <p>Lớp: {{user!.classname}}</p>
             <p>Khoa: {{user!.faculty}}</p>
         </div>
-        <div class="w-3/6 h-full overflow-auto">
+        <div class="w-3/6 hd h-full overflow-auto">
             <h3 class="text-2xl font-thin">Tên Contest: <a (click)="redirectContest(contest.id)">{{contest.title}}</a>
             </h3>
             <p>ContestID: <a (click)="redirectContest(contest.id)">{{contest.id}}</a></p>
         </div>
     </div>
+    <div class="h-full lg:hidden overflow-auto">
+        <h3 class="text-2xl font-thin">Tên Contest: <a (click)="redirectContest(contest.id)">{{contest.title}}</a>
+        </h3>
+        <p>ContestID: <a (click)="redirectContest(contest.id)">{{contest.id}}</a></p>
+    </div>
     <hr class="custom-divider">
-    <div class="mt-4 table-content  ml-0 mx-auto overflow-hidden">
+    <div class="mt-4 table-content  ml-0 mx-auto overflow-auto">
         <table class="w-full border-collapse border border-gray-300">
             <thead class="bg-gray-100 text-black">
                 <tr>

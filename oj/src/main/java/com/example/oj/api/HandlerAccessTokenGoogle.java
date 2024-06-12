@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.InvalidClassException;
+import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -48,7 +49,13 @@ public class HandlerAccessTokenGoogle {
             userDocument.setName(response.getBody().getName());
             userDocument.setAvatar(response.getBody().getPicture());
             userDocument.setRole(roleService.findOneByCode("STUDENT"));
+            userDocument.setLoginAt(LocalDateTime.now().toString());
             userService.insert(userDocument);
+        }
+        else {
+            existingUser.setLoginAt(LocalDateTime.now().toString());
+            existingUser.setAvatar(response.getBody().getPicture());
+            userService.update(existingUser);
         }
         var user = userDetailService.loadUserByUsername(response.getBody().getEmail());
         var access_token = jwtService.generateToken(user);

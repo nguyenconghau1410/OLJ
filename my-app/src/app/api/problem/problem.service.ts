@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Problem } from '../../models/problem.model';
 import { Observable } from 'rxjs';
 import { Topic } from '../../models/topic.model';
-import { API_URL, headers } from '../../constant';
+import { API_URL, API_URL_ADMIN, headers } from '../../constant';
 
 @Injectable({
   providedIn: 'root'
@@ -96,6 +96,35 @@ export class ProblemService {
     return this.http.post(
       API_URL.getSearchProblem,
       form,
+      { headers: headers }
+    )
+  }
+
+  // administration
+  getAll(pageNumber: number): Observable<any> {
+    return this.http.get(
+      `${API_URL_ADMIN.getAllProblem}/${pageNumber}`,
+      { headers: headers }
+    )
+  }
+
+  countAll(): Observable<any> {
+    return this.http.get(
+      `${API_URL_ADMIN.countAllProblem}`,
+      { headers: headers }
+    )
+  }
+
+  getDetailProblem(problemId: string): Observable<any> {
+    return this.http.get(
+      `${API_URL_ADMIN.getDetailProblem}/${problemId}`,
+      { headers: headers }
+    )
+  }
+
+  getSearchAdmin(keyword: string, pageNumber: number): Observable<any> {
+    return this.http.get(
+      `${API_URL_ADMIN.searchProblem}/${keyword}/${pageNumber}`,
       { headers: headers }
     )
   }

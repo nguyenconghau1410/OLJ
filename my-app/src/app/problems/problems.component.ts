@@ -17,7 +17,7 @@ import { FormsModule, NgForm } from '@angular/forms';
   styleUrl: './problems.component.scss'
 })
 export class ProblemsComponent {
-  problems: Problem[] = [];
+  problems: any = [];
   index: number = 1
   total: number = 0
   topics: Topic[] = []
@@ -95,8 +95,15 @@ export class ProblemsComponent {
     this.router.navigate(['problems'], { queryParams: { page: event } })
   }
 
+  calculate(ac: number, total: number) {
+    return (ac / total * 100).toFixed(2)
+  }
 
   onSubmit() {
+    if (!sessionStorage.getItem('access_token')) {
+      this.router.navigate(['login'])
+      return
+    }
     this.router.navigate(['problems'], { queryParams: { search: true } })
     this.problemService.getSearch(this.formSearch).subscribe(
       (data) => {

@@ -1,7 +1,7 @@
 <div *ngIf="check" class="main-content pt-20">
     <div class="flex justify-between">
         <div>
-            <h2>Quản lí problem</h2>
+            <h2>Quản lí Problem</h2>
         </div>
         <div><button (click)="createNew()"
                 class="mt-4 w-full bg-button bg-button-hover:hover text-white py-2 px-4 rounded">
@@ -13,7 +13,7 @@
         <nz-pagination (nzPageIndexChange)="onPageIndexChange($event)" [nzPageIndex]="pageIndex" [nzPageSize]="pageSize"
             [nzTotal]="total"></nz-pagination>
     </div>
-    <div class="mt-4 table-content  ml-0 mx-auto overflow-hidden">
+    <div class="mt-4 table-content  ml-0 mx-auto overflow-auto">
         <table class="w-full border-collapse border border-gray-300 text-left">
             <thead class="bg-gray-100 text-black">
                 <tr>
@@ -25,9 +25,10 @@
             </thead>
             <tbody>
                 <tr *ngFor="let problem of problems; let i = index">
-                    <td class="border border-gray-300 px-4 py-2"><a>{{problem.id}}</a>
+                    <td class="border border-gray-300 px-4 py-2"><a (click)="redirect(problem.id)">{{problem.id}}</a>
                     </td>
-                    <td class="text-base border border-gray-300 px-4 py-2"><a>{{problem.title}}</a>
+                    <td class="text-base border border-gray-300 px-4 py-2"><a
+                            (click)="redirect(problem.id)">{{problem.title}}</a>
                     </td>
                     <td class="text-base border border-gray-300 px-4 py-2">{{problem.state}}</td>
                     <td class="border border-gray-300 px-4 py-2">

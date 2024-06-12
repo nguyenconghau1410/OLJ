@@ -73,6 +73,20 @@ export class ResultComponent {
                   mode: 'text/x-python',
                 }
               }
+              else if (this.submission.language === 'cpp') {
+                this.options = {
+                  lineNumbers: true,
+                  theme: 'default',
+                  mode: 'text/x-c++src',
+                }
+              }
+              else {
+                this.options = {
+                  lineNumbers: true,
+                  theme: 'default',
+                  mode: 'text/x-csrc',
+                }
+              }
 
               if (!this.submission.result) {
                 // send id
@@ -81,6 +95,9 @@ export class ResultComponent {
                 }
                 else if (this.submission.language === 'python') {
                   this.websocketService.sendMessage('/app/execute-python', id)
+                }
+                else {
+                  this.websocketService.sendMessage('/app/execute-mingw', id)
                 }
 
                 // listen websocket
@@ -139,8 +156,10 @@ export class ResultComponent {
       return "Java"
     else if (language === 'python')
       return "Python"
-    else
+    else if (language === 'cpp')
       return "C++"
+    else
+      return "C"
   }
 
 }

@@ -9,12 +9,11 @@ import { DataService } from '../../service/data/data.service';
 import { DetailProblemComponent } from '../../detail-problem/detail-problem.component';
 import { User } from '../../models/user.model';
 import { NzPaginationModule } from 'ng-zorro-antd/pagination';
-import { NzModalModule, NzModalService } from 'ng-zorro-antd/modal';
 
 @Component({
   selector: 'app-challenges',
   standalone: true,
-  imports: [MatIconModule, CommonModule, DetailProblemComponent, NzPaginationModule, NzModalModule],
+  imports: [MatIconModule, CommonModule, DetailProblemComponent, NzPaginationModule],
   templateUrl: './challenges.component.html',
   styleUrl: './challenges.component.scss'
 })
@@ -34,8 +33,6 @@ export class ChallengesComponent {
   total = 0
   //modal
   isVisible = false;
-  textOk = 'Ok'
-  textCancel = 'Đóng'
   private countdownSubscription!: Subscription
   constructor(
     private router: Router,
@@ -90,9 +87,14 @@ export class ChallengesComponent {
                       }
                     }
                     else if (!(this.countdown === 'Hết thời gian')) {
-                      this.router.navigate(['landing', this.contest.id])
+                      for (let i = 0; i < this.contest.participants.length; i++) {
+                        if (this.contest.participants[i].email === user.email) {
+                          if (this.contest.participants[i].joined === false) {
+                            this.router.navigate(['landing', this.contest.id])
+                          }
+                        }
+                      }
                     }
-
                   }
                 )
               }
@@ -213,12 +215,4 @@ export class ChallengesComponent {
     return false
   }
 
-  //modal
-  handleOk(): void {
-    this.isVisible = false;
-  }
-
-  handleCancel(): void {
-    this.isVisible = false;
-  }
 }

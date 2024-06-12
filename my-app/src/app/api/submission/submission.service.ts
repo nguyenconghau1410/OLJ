@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Submit } from '../../models/submit.model';
 import { Observable } from 'rxjs';
-import { API_URL, headers } from '../../constant';
+import { API_URL, API_URL_ADMIN, headers } from '../../constant';
 @Injectable({
   providedIn: 'root'
 })
@@ -83,6 +83,39 @@ export class SubmissionService {
   getFigure(): Observable<any> {
     return this.http.get(
       API_URL.getFigure,
+      { headers: headers }
+    )
+  }
+
+  getLeaderboardUser(pageNumber: number): Observable<any> {
+    return this.http.get(
+      `${API_URL.getLeaderboardUser}/${pageNumber}`
+    )
+  }
+
+  countAllUser(): Observable<any> {
+    return this.http.get(
+      API_URL.countAllUser
+    )
+  }
+
+  getACList(userId: string, pageNumber: number): Observable<any> {
+    return this.http.get(
+      `${API_URL.getACList}/${userId}/${pageNumber}`,
+      { headers: headers }
+    )
+  }
+
+  countACList(userId: string): Observable<any> {
+    return this.http.get(
+      `${API_URL.countACList}/${userId}`,
+      { headers: headers }
+    )
+  }
+  // administration
+  deleteSubmissionsNotAC(problemId: string): Observable<any> {
+    return this.http.delete(
+      `${API_URL_ADMIN.deleteSubmissionsNotAC}/${problemId}`,
       { headers: headers }
     )
   }

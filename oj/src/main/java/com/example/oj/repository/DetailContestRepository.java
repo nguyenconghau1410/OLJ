@@ -23,7 +23,7 @@ public interface DetailContestRepository extends MongoRepository<DetailContest, 
     Page<DetailContest> findByContestIdAndProblemId(String contestId, String problemId, Pageable pageable);
 
     Integer countByContestIdAndProblemId(String contestId, String problemId);
-
+    void deleteByContestId(String contestId);
     @Aggregation(pipeline = {
             "{ $match: { contestId: ?0 } }",
             "{ $addFields: { parsedDate: { $dateFromString: { dateString: { $substr: ['$createdAt', 0, 23] } } } } }",

@@ -1,12 +1,8 @@
 package com.example.oj.service;
 
-import com.example.oj.document.ProblemDocument;
-import com.example.oj.document.TopicDocument;
-import com.example.oj.document.TopicProblemDocument;
+import com.example.oj.document.*;
 import com.example.oj.dto.ProblemSmall;
-import com.example.oj.repository.ProblemRepository;
-import com.example.oj.repository.TopicProblemRepository;
-import com.example.oj.repository.TopicRepository;
+import com.example.oj.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.parsing.Problem;
 import org.springframework.data.domain.Page;
@@ -22,6 +18,8 @@ public class TopicService {
     private final TopicRepository topicRepository;
     private final TopicProblemRepository topicProblemRepository;
     private final ProblemRepository problemRepository;
+    private final SubmissionRepository submissionRepository;
+    private final UserRepository userRepository;
     public TopicDocument insert(TopicDocument topicDocument) {
         return topicRepository.insert(topicDocument);
     }
@@ -50,12 +48,37 @@ public class TopicService {
         for(var x : list.getContent()) {
             Optional<ProblemDocument> problemDocument = problemRepository.findById(x.getProblemId());
             if(problemDocument.isPresent()) {
-                problems.add(new ProblemSmall().convert(problemDocument.get()));
+                ProblemSmall problemSmall = new ProblemSmall().convert(problemDocument.get());
+                problemSmall.setDifficulty(problemDocument.get().getDifficulty());
+                ProblemSmall statistic = submissionRepository.getStatisticProblem(problemDocument.get().getId());
+                problemSmall.setDifficulty(problemDocument.get().getDifficulty());
+                if(statistic != null) {
+                    problemSmall.setTotal(statistic.getTotal());
+                    problemSmall.setTotalAC(statistic.getTotalAC());
+                }
+                problems.add(problemSmall);
             }
         }
         Map<String, Object> mp = new HashMap<>();
         mp.put("list", problems);
         mp.put("total", total);
         return mp;
+    }
+
+    public Map<String, String> delete(String email, String id) {
+        Optional<UserDocument> userDocument = userRepository.findByEmail(email);
+        if(userDocument.isPresent()) {
+            Map<String, String> mp = new HashMap<>();
+            if(userDocument.get().getRole().getCode().equals("ADMIN")) {
+                topicRepository.deleteById(id);
+                topicProblemRepository.deleteByTopicId(id);
+                mp.put("result", "success");
+            }
+            else {
+                mp.put("result", "error");
+            }
+            return mp;
+        }
+        return null;
     }
 }

@@ -146,7 +146,6 @@ export class EditProblemComponent {
     if (this.problem.testcase.length === 0) {
       this.fileService.deleteFolder(this.folder).subscribe(
         () => {
-          console.log("cccc")
           this.toastrService.success(
             'Deleted!', '', { timeOut: 2000 }
           )
@@ -154,7 +153,7 @@ export class EditProblemComponent {
       )
     }
     if (this.checkUploadFile()) {
-      const folder = this.problem.id + "-" + this.problem.title
+      const folder = this.problem.id
       if (this.inputFiles.length !== 0 && this.outputFiles.length !== 0) {
         this.fileService.uploadFile(this.inputFiles, folder, 'input').subscribe(
           (data) => {
@@ -169,10 +168,16 @@ export class EditProblemComponent {
             }
           },
           (error) => {
-            if (error.status !== 401) {
+            if (error.status === 403) {
               this.toastrService.error(
-                `Error: ${error.status}`, '',
-                { timeOut: 1000 }
+                `ProblemID đã tồn tại, hãy đặt tên khác !`, '',
+                { timeOut: 2000 }
+              )
+            }
+            else {
+              this.toastrService.error(
+                `Đã có lỗi xảy ra, hãy thử lại !`, '',
+                { timeOut: 2000 }
               )
             }
           }
@@ -190,10 +195,16 @@ export class EditProblemComponent {
             }
           },
           (error) => {
-            if (error.status !== 401) {
+            if (error.status === 403) {
               this.toastrService.error(
-                `Error: ${error.status}`, '',
-                { timeOut: 1000 }
+                `ProblemID đã tồn tại, hãy đặt tên khác !`, '',
+                { timeOut: 2000 }
+              )
+            }
+            else {
+              this.toastrService.error(
+                `Đã có lỗi xảy ra, hãy thử lại !`, '',
+                { timeOut: 2000 }
               )
             }
           }

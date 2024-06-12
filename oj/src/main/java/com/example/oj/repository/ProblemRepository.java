@@ -14,6 +14,7 @@ public interface ProblemRepository extends MongoRepository<ProblemDocument, Stri
 
     Page<ProblemDocument> findAllByEmail(String email, Pageable pageable);
 
+    Page<ProblemDocument> findAll(Pageable pageable);
     Integer countByEmail(String email);
     List<ProblemDocument> findByTitleContaining(String keyword);
     Page<ProblemDocument> findByTitleContaining(String keyword, Pageable pageable);
